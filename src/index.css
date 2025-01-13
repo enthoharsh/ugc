@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loading.cover-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+.loading.cover-page {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+}
+.loading .ant-spin {
+  color: #3e79f7;
+}
+.cardFloatButton  {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 4px 12px;
+  background-image: linear-gradient(1deg, #6b5bfc, #a79ef9);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  grid-gap: 6px;
+  gap: 6px;
+  outline: none;
+  border: none;
+  transition: all ease 0.4s;
+  cursor: pointer;
+}
+.cardFloatButton:hover{
+  background-image: linear-gradient(1deg, #a79ef9, #6b5bfc);
+}
+
+/* CHANGE ORANGE THEME / STEPS  */
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected{
+  background-color: #FD5C0214;
+}
+.ant-menu-item-selected, .ant-menu-item-selected a, .ant-menu-item-selected a:hover, .ant-menu-submenu:hover>.ant-menu-submenu-title>.ant-menu-submenu-arrow, .ant-menu-submenu:hover>.ant-menu-submenu-title>.ant-menu-submenu-expand-icon {
+  color: #fd5c02;
+}
+.ant-menu-item a:hover, .ant-menu-item > .ant-badge a:hover, .ant-menu-submenu-selected,.ant-menu-item-active, .ant-menu-item:hover, .ant-menu-submenu-active, .ant-menu-submenu-title:hover, .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open {
+  color: #fd5c02;
+}
+ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
+  background-image: linear-gradient(0deg, #fd5c0224, #fd5c020f);
+}
+.ant-steps-item {
+  color: #999;
+}
+
+.ant-steps-item-active .ant-steps-item-icon {
+  background-color: #ff6600 !important;
+  border-color: #ff6600 !important;
+}
+
+.ant-steps-item-active .ant-steps-item-title {
+  color: #ff6600 !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #ff6600 !important;
+  border-color: #ff6600 !important;
+}
+.ant-steps-item-finish .ant-steps-item-icon svg{
+  color: white;
+}
+.ant-steps-item-finish .ant-steps-item-title {
+  color: #ff6600 !important;
+}
+.ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-tail::after {
+  background-color: #e6ebf1;
+}
+.ant-steps-item-icon {
+  background-color: #f0f0f0;
+  border-color: #f0f0f0;
+  color: #999;
+}
+
+.ant-steps-item-title {
+  color: #999;
+}
+
+.steps-actions {
+  margin-top: 20px;
+}
+
+.steps-actions button {
+  margin: 0 10px;
+  padding: 5px 10px;
+  /* background-color: #ff6600; */
+  background-color: #FC52E4;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.steps-actions button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+/* CHANGE ORANGE THEME / RADIO BUTTON  */
+
+.radio-buttons h3 {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.radio-buttons .ant-radio-wrapper {
+  margin-right: 15px;
+  font-size: 14px;
+}
+
+.radio-buttons .ant-radio-checked .ant-radio-inner {
+  border-color: #ff6600;
+}
+
+.radio-buttons .ant-radio-inner::after {
+  background-color: #ff6600;
+}
+
+.radio-buttons .ant-radio:hover .ant-radio-inner {
+  border-color: #ff6600;
+}
+
+
+/* FOR BORDER BOX RADIO  */
+
+.styled-radio-group {
+  margin: 20px 0;
+}
+
+.styled-radio-group h3 {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 15px;
+}
+
+.radio-options {
+  display: flex;
+  gap: 15px;
+}
+.radio-option-box p{
+  margin: 0;
+}
+.radio-option-box {
+  padding: 10px 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #5c5c5c;
+}
+
+.radio-option-box.selected {
+  border-color: #ff6600;
+  background-color: #fff4f0a8;
+  color: #000000;
+}
+
+.radio-option-box:hover {
+  border-color: #ff6600;
+  color: #000000;
+}
+
+
+/* VIDEO DURATION SELECTOR MULTIPLE CHECKBOX CUSTOM CSS  */
+.video-selector-container {
+  /* padding: 24px; */
+  /* max-width: 1200px; */
+  margin: 0 auto;
+}
+
+.video-selector-title {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.card-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.duration-card {
+  flex: 1;
+  min-width: 280px;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #e5e5e5;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.duration-card.selected {
+  border: 2px solid #ff6b35;
+  background-color: #fff5f0;
+}
+
+.duration-text {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.quantity-button:disabled {
+  background-color: #f5f5f5;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+.quantity {
+  width: 24px;
+  text-align: center;
+}
+
+.price {
+  color: #ff6b35;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .card-container {
+    flex-direction: column;
+  }
+  
+  .duration-card {
+    width: 100%;
+  }
+}
+
+/* CHANGE ORANGE THEME / CHECKBOX  */
+
+.orangeCheckBox .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #ff6b35 !important; /* Change background color of the checked box */
+  border-color: #ff6b35 !important;    /* Change border color of the checked box */
+}
+
+.orangeCheckBox .ant-checkbox-checked .ant-checkbox-inner::after {
+  color: white !important; /* Change the tick color */
+}
+
