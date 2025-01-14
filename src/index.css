@@ -149,7 +149,7 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
   margin: 20px 0;
 }
 
-.styled-radio-group h3 {
+.criteria-section h3,.styled-radio-group h3 {
   font-size: 16px;
   font-weight: 400;
   margin-bottom: 15px;
@@ -289,3 +289,28 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
   color: white !important; /* Change the tick color */
 }
 
+.creator-criteria-container span.ant-tag.ant-tag-checkable.ant-tag-checkable-checked,.creator-criteria-container span.ant-tag.ant-tag-checkable.ant-tag-checkable-checked:hover {
+  background: #ff6b35;
+  border: none;
+  color: white;
+}
+.creator-criteria-container span.ant-tag.ant-tag-checkable {
+  border: 1px solid #cfcfcf;
+}
+.creator-criteria-container span.ant-tag.ant-tag-checkable:hover{
+  color: #ff6b35;
+}
+.orange-theme-tags span.ant-tag.ant-tag-checkable.ant-tag-checkable-checked,.orange-theme-tags span.ant-tag.ant-tag-checkable.ant-tag-checkable-checked:hover {
+  background: #ff6b35;
+  border: none;
+  color: white;
+}
+.orange-theme-tags span.ant-tag.ant-tag-checkable {
+  border: 1px solid #cfcfcf;
+}
+.orange-theme-tags span.ant-tag.ant-tag-checkable:hover{
+  color: #ff6b35;
+}
+.criteria-section div{
+  margin-bottom: 10px;
+}

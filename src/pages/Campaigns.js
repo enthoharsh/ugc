@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { Steps, Radio, InputNumber, Checkbox, Button, Divider, Row, Col, Typography, Card } from "antd";
-
+import { Steps, Radio, Input, Checkbox, Button, Divider, Row, Col, Typography, Card } from "antd";
+import { Tag } from 'antd';
+import {  Upload, Space } from 'antd';
+import { UploadOutlined, GlobalOutlined } from '@ant-design/icons';
+const { TextArea } = Input;
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
@@ -115,12 +118,72 @@ const VideoDurationSelector = ({ selections, setSelections }) => {
 
 
 
-
+const options = {
+    gender: ['Female', 'Male'],
+    age: ['18-24', '25-32', '33-44', '45+'],
+    distinctives: [
+      'African',
+      'Asian',
+      'European',
+      'Latino',
+      'Parent',
+      'Plus Size',
+      'Fit & Sporty',
+      'Glamourous',
+    ],
+    language: ['English', 'French', 'Spanish', 'Latin', 'Arabic', 'German'],
+    accent: [
+      'Aussie',
+      'Arabic',
+      'Asian',
+      'European',
+      'North American',
+      'British',
+    ],
+    including: ['Dog', 'Cat', 'Other Pets', 'Partner', 'Baby', 'Kids(2-6)', 'Kids(7-12)', 'Car'],
+    settings: ['Bathroom', 'Kitchen', 'Bedroom', 'Pool', 'Office', 'Beach'],
+  };
 
 const Campaigns = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [promotionType, setPromotionType] = useState("Digital Product");
     const [whatareyoupromoting, setWhatareyoupromoting] = useState("Video Ad Style");
+    const [productName, setProductName] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [category, setCategory] = useState('');
+  const [targetAudience, setTargetAudience] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
+  const [script, setScript] = useState('');
+  const [callToAction, setCallToAction] = useState('');
+  const [isGifted, setIsGifted] = useState(false);
+  const [needsShipping, setNeedsShipping] = useState(false);
+  const categories = ['Style', 'Wellness', 'Adventure', 'Beauty', 'Home', 'Technology'];
+
+    const [selectedCriteria, setSelectedCriteria] = useState({
+        gender: '',
+        age: [],
+        distinctives: [],
+        language: [],
+        accent: [],
+        including: [],
+        settings: [],
+        specificCriteria: '',
+      });
+    
+      const handleChange = (key, value) => {
+        if (key=='specificCriteria') {
+            setSelectedCriteria((prev)=>{
+                return{...prev,specificCriteria:value}
+            })
+            return
+        }
+        setSelectedCriteria((prev) => ({
+          ...prev,
+          [key]: prev[key].includes(value)
+            ? prev[key].filter((item) => item !== value)
+            : [...prev[key], value],
+        }));
+      };
     const promotionoptions = [
         {
             title: "Reel Style",
@@ -171,7 +234,14 @@ const Campaigns = () => {
     const handlePlatformChange = (checkedValues) => {
         setPlatforms(checkedValues);
     };
-
+    const handleStepChange = (meth) => {
+        if (meth=='prev') {
+            setCurrentStep(currentStep - 1)
+        }else{
+            setCurrentStep(currentStep + 1)
+        }
+        console.log(selectedCriteria);
+    }
     return (
         <div style={{ padding: "20px" }}>
             <Title level={3}>New Campaign</Title>
@@ -181,7 +251,6 @@ const Campaigns = () => {
                 <Step title="Project Details" />
                 <Step title="Creator Criteria" />
                 <Step title="Project Brief" />
-                <Step title="Payment" />
             </Steps>
 
             {currentStep === 0 && (
@@ -221,19 +290,292 @@ const Campaigns = () => {
                     </div>
                 </div>
             )}
+            {
+                currentStep === 1 && (
+                    <div style={{ border: '1px solid #d2d2d2', borderRadius: '8px', padding: '20px' }} className="creator-criteria-container">
+                    <h2>Creator Criteria (select all that apply):</h2>
+              
+                    <div className="criteria-section">
+                      <h3>Gender</h3>
+                      {options.gender.map((gender) => (
+                        <Tag.CheckableTag
+                          key={gender}
+                          checked={selectedCriteria.gender.includes(gender)}
+                          onChange={() => handleChange('gender', gender)}
+                        >
+                          {gender}
+                        </Tag.CheckableTag>
+                      ))}
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Age</h3>
+                      <div>
+                      {
+                        options.age.map((age) => (
+                            <Tag.CheckableTag
+                              key={age}
+                              checked={selectedCriteria.age.includes(age)}
+                              onChange={() => handleChange('age', age)}
+                            >
+                              {age}
+                            </Tag.CheckableTag>
+                          ))
+                      }</div>
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Distinctives</h3>
+                      <div>
+                      {
+                        options.distinctives.map((distinctives) => (
+                            <Tag.CheckableTag
+                              key={distinctives}
+                              checked={selectedCriteria.distinctives.includes(distinctives)}
+                              onChange={() => handleChange('distinctives', distinctives)}
+                            >
+                              {distinctives}
+                            </Tag.CheckableTag>
+                          ))
+                      }</div>
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Language</h3>
+                      <div>
+                      {
+                        options.language.map((language) => (
+                            <Tag.CheckableTag
+                              key={language}
+                              checked={selectedCriteria.language.includes(language)}
+                              onChange={() => handleChange('language', language)}
+                            >
+                              {language}
+                            </Tag.CheckableTag>
+                          ))
+                      }</div>
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Accent</h3>
+                      <div>
+                      {
+                        options.accent.map((accent) => (
+                            <Tag.CheckableTag
+                              key={accent}
+                              checked={selectedCriteria.accent.includes(accent)}
+                              onChange={() => handleChange('accent', accent)}
+                            >
+                              {accent}
+                            </Tag.CheckableTag>
+                          ))
+                      }</div>
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Including</h3>
+                      <div>
+                      {
+                        options.including.map((including) => (
+                            <Tag.CheckableTag
+                              key={including}
+                              checked={selectedCriteria.including.includes(including)}
+                              onChange={() => handleChange('including', including)}
+                            >
+                              {including}
+                            </Tag.CheckableTag>
+                          ))
+                      }</div>
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Settings</h3>
+                      <div>
+                      {
+                        options.settings.map((settings) => (
+                            <Tag.CheckableTag
+                              key={settings}
+                              checked={selectedCriteria.settings.includes(settings)}
+                              onChange={() => handleChange('settings', settings)}
+                            >
+                              {settings}
+                            </Tag.CheckableTag>
+                          ))
+                      }</div>
+                    </div>
+              
+                    <div className="criteria-section">
+                      <h3>Any other specific criteria?</h3>
+                      <TextArea
+                        rows={4}
+                        value={selectedCriteria.specificCriteria}
+                        onChange={(e) => handleChange('specificCriteria', e.target.value)}
+                        placeholder="Specify and describe your preference of creators"
+                      />
+                    </div>
+                  </div>
+                )
+            }
+            {
+                currentStep === 2 && (
+                    <div className="product-form">
+                    <div style={{ border: '1px solid #d2d2d2', borderRadius: '8px', padding: '20px' }}>
+                      <div className="styled-radio-group">
+                        <h3>Product name</h3>
+                        <Input
+                          type="text"
+                          placeholder="Name of your product"
+                          value={productName}
+                          onChange={(e) => setProductName(e.target.value)}
+                          className="styled-input"
+                        />
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>Brand name</h3>
+                        <Input
+                          type="text"
+                          placeholder="Name of your brand"
+                          value={brandName}
+                          onChange={(e) => setBrandName(e.target.value)}
+                          className="styled-input"
+                        />
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>Product Brand logo</h3>
+                        <Upload>
+                          <Button icon={<UploadOutlined />}>Upload file</Button>
+                        </Upload>
+                      </div>
+              
+                      <div className="orange-theme-tags">
+                        <h3>Category</h3>
+                        {categories.map((cat) => (
+                        <Tag.CheckableTag
+                          key={cat}
+                          checked={category === cat}
+                          onChange={() => setCategory(cat)}
+                        >
+                          {cat}
+                        </Tag.CheckableTag>
+                      ))}
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>Target audience</h3>
+                        <Input
+                          placeholder="What do they have in common?"
+                          value={targetAudience}
+                          onChange={(e) => setTargetAudience(e.target.value)}
+                          className="styled-textarea"
+                        />
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>What do you want to see in the video?</h3>
+                        <Input
+                          placeholder="Please describe what you want to see in the video"
+                          value={videoDescription}
+                          onChange={(e) => setVideoDescription(e.target.value)}
+                          className="styled-textarea"
+                        />
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>What do you want them to say?</h3>
+                        <Input
+                          placeholder="What are the key selling points? What should the creator focus on?"
+                          value={script}
+                          onChange={(e) => setScript(e.target.value)}
+                          className="styled-textarea"
+                        />
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>What is the call to action?</h3>
+                        <Input
+                          type="text"
+                          placeholder="e.g. Order now, Download now, Click the link below etc."
+                          value={callToAction}
+                          onChange={(e) => setCallToAction(e.target.value)}
+                          className="styled-input"
+                        />
+                      </div>
+              
+                      <div className="radio-buttons">
+                        <h3>Will the product be gifted to the creator?</h3>
+                        <Radio.Group
+                          value={isGifted}
+                          onChange={(e) => setIsGifted(e.target.value)}
+                        >
+                          <Radio value={true}>Gifted</Radio>
+                          <Radio value={false}>Not Gifted</Radio>
+                        </Radio.Group>
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>Brand website & social platforms</h3>
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                          <Input
+                            type="text"
+                            placeholder="www.yourwebsite.com"
+                            className="styled-input"
+                          />
+                          <Input
+                            type="text"
+                            placeholder="instagram.com/yourprofile"
+                            className="styled-input"
+                          />
+                          <Input
+                            type="text"
+                            placeholder="yourotherprofile.com/profilename"
+                            className="styled-input"
+                          />
+                        </Space>
+                      </div>
+              
+                      <div className="radio-buttons">
+                        <h3>Do you need to ship your product to the creators?</h3>
+                        <Radio.Group
+                          value={needsShipping}
+                          onChange={(e) => setNeedsShipping(e.target.value)}
+                        >
+                          <Radio value={true}>Yes</Radio>
+                          <Radio value={false}>No</Radio>
+                        </Radio.Group>
+                      </div>
+              
+                      <div className="styled-radio-group">
+                        <h3>Upload script or other assets</h3>
+                        <Upload>
+                          <Button icon={<UploadOutlined />}>Upload files</Button>
+                        </Upload>
+                      </div>
+                    </div>
+              
+                    
+                  </div>
+                )
+            }
             <div className="steps-actions">
                 <button
                     disabled={currentStep === 0}
-                    onClick={() => setCurrentStep(currentStep - 1)}
+                    onClick={() => handleStepChange("prev")}
                 >
-                    Previous
+                    Back
                 </button>
-                <button
-                    disabled={currentStep === 3}
-                    onClick={() => setCurrentStep(currentStep + 1)}
+                {currentStep!=2 &&<button
+                    disabled={currentStep === 2}
+                    onClick={() => handleStepChange("next")}
                 >
                     Next
-                </button>
+                </button>}
+                {currentStep==2 && <button
+                    onClick={() => handleStepChange("next")}
+                >
+                    Proceed to payment
+                </button>}
             </div>
             {/* Additional step content can be added for other steps here */}
         </div>
