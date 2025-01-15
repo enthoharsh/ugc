@@ -314,3 +314,155 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 .criteria-section div{
   margin-bottom: 10px;
 }
+
+/* ALLL CAMPAIGNS PAGE  */
+
+/* index.css */
+.allCamp-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.allCamp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.allCamp-title-section h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.allCamp-breadcrumb {
+  margin-top: 8px;
+  color: #666;
+}
+
+.allCamp-breadcrumb .allCamp-separator {
+  margin: 0 8px;
+}
+
+.allCamp-breadcrumb .allCamp-active {
+  color: #ff6b4a;
+}
+
+.allCamp-new-campaign-btn {
+  background-color: #ff6b4a;
+  border: none;
+}
+
+.allCamp-new-campaign-btn:hover,.allCamp-new-campaign-btn:focus,.allCamp-new-campaign-btn:active {
+  background-color: #ff835f !important;
+}
+
+.allCamp-filters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.allCamp-search-input {
+  width: 300px;
+}
+
+.allCamp-campaign-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.allCamp-campaign-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.allCamp-campaign-card .ant-card-body{
+  padding: 0;
+}
+.allCamp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.allCamp-logo-container {
+  width: 48px;
+  height: 48px;
+  background-color: #e74c3c;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.allCamp-company-logo {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+.allCamp-proposals{
+  color: #e74c3c;
+  margin: 8px 0;
+}
+.allCamp-more-btn {
+  padding: 4px;
+}
+
+.allCamp-date{
+  color: #666;
+  margin: 8px 0;
+}
+
+.allCamp-card-details {
+  /* margin-top: 16px; */
+  display: flex;
+  justify-content: flex-start;
+  border-top: 1px dashed #dadada;
+}
+.allCamp-card-details > div{
+  width: 50%;
+}
+.allCamp-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.allCamp-detail-label {
+  color: #666;
+}
+
+.allCamp-platform-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.allCamp-platform-tag {
+  background-color: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.allCamp-creators-needed {
+  color: #666;
+  font-size: 12px;
+}
+
+.allCamp-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* ALLL CAMPAIGNS PAGE  */
+
+
+.ant-menu-vertical .ant-menu-submenu-title span{
+  display: block;
+}

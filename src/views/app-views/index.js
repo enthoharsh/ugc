@@ -8,7 +8,8 @@ export const AppViews = () => {
     <Suspense fallback={<Loading cover="content"/>}>
       <Switch>
         <Route path={`${APP_PREFIX_PATH}/home`} component={lazy(() => import(`./home`))} />
-        <Route path={`${APP_PREFIX_PATH}/campaigns`} component={lazy(() => import(`../../pages/Campaigns`))} />
+        <Route path={`${APP_PREFIX_PATH}/campaigns/order-form`} component={lazy(() => import(`../../pages/OrderCampaigns`))} />
+        <Route path={`${APP_PREFIX_PATH}/campaigns/all-campaigns`} component={lazy(() => import(`../../pages/AllCampaigns`))} />
         <Route path={`${APP_PREFIX_PATH}/marketplace`} component={lazy(() => import(`../../pages/MarketPlace`))} />
         <Route path={`${APP_PREFIX_PATH}/jobs`} component={lazy(() => import(`../../pages/Jobs`))} />
         <Route path={`${APP_PREFIX_PATH}/notification`} component={lazy(() => import(`../../pages/Notification`))} />

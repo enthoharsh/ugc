@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Alert } from "antd";
-import { showAuthMessage, showLoading, hideAuthMessage, authenticated } from 'redux/actions/Auth';
+import { showAuthMessage, showLoading, hideAuthMessage, authenticated, signUp } from 'redux/actions/Auth';
 import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion"
 import JwtAuthService from 'services/JwtAuthService'
@@ -42,19 +42,14 @@ const rules = {
 
 export const RegisterForm = (props) => {
 
-	const { showLoading, token, loading, redirect, message, showMessage, hideAuthMessage, authenticated, allowRedirect } = props
+	const { showLoading, token,signUp, loading, redirect, message, showMessage, hideAuthMessage, authenticated, allowRedirect } = props
 	const [form] = Form.useForm();
 	let history = useHistory();
 
 	const onSignUp = () => {
     	form.validateFields().then(values => {
 			showLoading()
-			const fakeToken = 'fakeToken'
-			JwtAuthService.signUp(values).then(resp => {
-				authenticated(fakeToken)
-			}).then(e => {
-				showAuthMessage(e)
-			})
+			signUp(values)
 		}).catch(info => {
 			console.log('Validate Failed:', info);
 		});
@@ -122,6 +117,7 @@ const mapStateToProps = ({auth}) => {
 }
 
 const mapDispatchToProps = {
+	signUp,
 	showAuthMessage,
 	hideAuthMessage,
 	showLoading,
