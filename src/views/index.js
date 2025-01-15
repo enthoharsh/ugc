@@ -43,12 +43,12 @@ export const Views = (props) => {
           <Route path={AUTH_PREFIX_PATH}>
             <AuthLayout direction={direction} />
           </Route>
-          <Route path={APP_PREFIX_PATH}>
+          {/* <Route path={APP_PREFIX_PATH}>
             <AppLayout direction={direction} location={location}/>
-          </Route>
-          {/* <RouteInterceptor path={APP_PREFIX_PATH} isAuthenticated={token}>
+          </Route> */}
+          <RouteInterceptor path={APP_PREFIX_PATH} isAuthenticated={token}>
             <AppLayout direction={direction} location={location}/>
-          </RouteInterceptor> */}
+          </RouteInterceptor>
         </Switch>
       </ConfigProvider>
     </IntlProvider>
