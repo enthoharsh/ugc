@@ -3,6 +3,7 @@ import React from 'react';
 import { Input, Card, Button, Space, Select, Pagination } from 'antd';
 import { SearchOutlined, MoreOutlined, TeamOutlined } from '@ant-design/icons';
 import { HangerIcon, ImageIcon, PlatformIcon, UserIcon } from 'components/icons';
+import { Link } from 'react-router-dom/cjs/react-router-dom';
 
 const { Option } = Select;
 
@@ -29,9 +30,11 @@ const AllCampaigns = () => {
             <span className="allCamp-active">All Campaigns</span>
           </div>
         </div>
+        <Link to={'order-form'}>
         <Button type="primary" className="allCamp-new-campaign-btn">
           + New Campaign (Order Form)
         </Button>
+        </Link>
       </div>
 
       <div className="allCamp-filters">
@@ -49,6 +52,7 @@ const AllCampaigns = () => {
 
       <div className="allCamp-campaign-grid">
         {campaigns.map((campaign, index) => (
+          <Link to={`campaign-detail/${index}`}>
           <Card key={index} className="allCamp-campaign-card">
             <div style={{padding:'20px'}}>
 
@@ -87,6 +91,7 @@ const AllCampaigns = () => {
               </Space>
             </div>
           </Card>
+          </Link>
         ))}
       </div>
 

@@ -2,7 +2,7 @@ import {
   BellOutlined,
   DashboardOutlined, IdcardOutlined, MessageOutlined, ShopOutlined, UserOutlined
 } from '@ant-design/icons';
-import { Campaign } from 'components/icons';
+import { AllContractIcon, Campaign } from 'components/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
 const dashBoardNavTree = [
@@ -19,7 +19,8 @@ const dashBoardNavTree = [
   icon: DashboardOutlined,
   breadcrumb: false,
   submenu: []
-  }, {
+  }, 
+  {
     key: 'campaigns',
     path: `${APP_PREFIX_PATH}/campaigns`,
     title: 'Campaigns',
@@ -43,6 +44,14 @@ const dashBoardNavTree = [
         submenu: []
       },
     ]
+  },
+    {
+    key: 'all-contracts',
+    path: `${APP_PREFIX_PATH}/all-contracts`,
+    title: 'Contracts',
+    icon: AllContractIcon ,
+    breadcrumb: false,
+    submenu: []
   },
     {
     key: 'marketplace',
