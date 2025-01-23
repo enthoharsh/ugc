@@ -32,7 +32,15 @@
   color: white !important;
   background-color: var(--secondary-color) !important;
 }
-
+.account-set .ant-upload.ant-upload-select-picture-card{
+  border-radius: 50%;
+  margin: auto !important;
+  display: block;
+}
+.account-set span.ant-upload{
+  overflow: hidden;
+  border-radius: 50%;
+}
 /* FORM ASTRICK SIGN MOVE TO RIGHT */
 
 .ant-form-item-label>label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before{
@@ -661,6 +669,12 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 .campaign-detail-tables .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
   color: #000000;
 }
+.account-settings .ant-tabs-ink-bar{
+  background-color: var(--dark-primary-color);
+}
+.account-settings .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
+  color: var(--dark-primary-color);
+}
 /* Add these custom styles to your CSS file */
 
 /* Name column styles */
@@ -1159,3 +1173,19 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 }
 
 /* PROFILE PAGE */
+
+
+
+/* ACCOUNT BILLING  */
+.account-set thead.ant-table-thead tr th {
+  background: #fff5ee;
+  color: var(--dark-primary-color);
+}
+.account-set{
+  background-color: white;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgb(232, 232, 232);
+}
+
+/* ACCOUNT BILLING  */
