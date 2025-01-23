@@ -84,7 +84,7 @@ const CampaignInfo = () => {
         {/* <Button type="link" className="back-button">
           &lt; Back
         </Button> */}
-        <div style={{display:'flex',gap:'8px'}}>
+        <div style={{display:'flex',gap:'8px',marginLeft:'auto'}}>
         <Button className="primary-color-btn" onClick={showModal}>
             Submit Application
         </Button>
