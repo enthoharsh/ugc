@@ -59,10 +59,12 @@
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
+    "start2": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently \"npm run start\" \"gulp watch\""
+    "dev": "concurrently \"npm run start\" \"gulp watch\"",
+    "dev2": "concurrently \"npm run start2\" \"gulp watch\""
   },
   "eslintConfig": {
     "extends": [

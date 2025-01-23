@@ -1,9 +1,10 @@
 // AllCampaigns.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input, Card, Button, Space, Select, Pagination } from 'antd';
 import { SearchOutlined, MoreOutlined, TeamOutlined } from '@ant-design/icons';
 import { HangerIcon, ImageIcon, PlatformIcon, UserIcon } from 'components/icons';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
+import { api } from 'auth/FetchInterceptor';
 
 const { Option } = Select;
 
@@ -19,6 +20,87 @@ const AllCampaigns = () => {
     creators: 3
   });
 
+  useEffect(() => {
+    api.get("Campaigns").then((res) => {
+      console.log(res);
+    });
+  }, []);
+
+  const createCampaign = () => {
+    api.save("Campaigns", {
+      what_are_you_promoting: "Promoting",
+      video_type: "Video Type",
+      videos_from_creator: "Videos From Creator",
+      what_platforms_is_it_for: "Platforms",
+      video_aspect_ratio: "Aspect Ratio",
+      genders: ["Male", "Female"],
+      ages: ["18-24", "25-34"],
+      distinctives: ["Distinctive"],
+      languages: ["English"],
+      accents: ["Accent"],
+      includings: ["Including"],
+      settings: ["Setting"],
+      any_other_specific_criteria: "Specific Criteria",
+      product_name: "Product Name",
+      brand_name: "Brand Name",
+      product_brand_logo: "Brand Logo",
+      categories: ["Category"],
+      campaign_budget: 1000,
+      target_audience: "Target Audience",
+      what_do_you_want_to_see_in_the_video: "Video Details",
+      what_do_you_want_them_to_say: "Video Details",
+      what_is_the_call_to_action: "Call To Action",
+      will_the_product_be_gifted_to_the_creator: true,
+      brand_website_social_platforms: ["Website", "Social Platform"],
+      do_you_need_to_ship_your_product_to_the_creators: true,
+      upload_script_or_other_assets: ["Script", "Assets"],
+    }).then((res) => {
+      console.log(res);
+    });
+  };
+
+  const updateCampaign = () => {
+    api.update("Campaigns", {
+      _id: "67924abd5d6bf8bbb283f2d5",
+      what_are_you_promoting: "Promoting",
+      video_type: "Video Type",
+      videos_from_creator: "Videos From Creator",
+      what_platforms_is_it_for: "Platforms",
+      video_aspect_ratio: "Aspect Ratio",
+      genders: ["Male", "Female"],
+      ages: ["18-24", "25-34"],
+      distinctives: ["Distinctive"],
+      languages: ["English"],
+      accents: ["Accent"],
+      includings: ["Including"],
+      settings: ["Setting"],
+      any_other_specific_criteria: "Specific Criteria",
+      product_name: "Product Name",
+      brand_name: "Brand Name",
+      product_brand_logo: "Brand Logo",
+      categories: ["Category"],
+      campaign_budget: 1000,
+      target_audience: "Target Audience",
+      what_do_you_want_to_see_in_the_video: "Video Details",
+      what_do_you_want_them_to_say: "Video Details",
+      what_is_the_call_to_action: "Call To Action",
+      will_the_product_be_gifted_to_the_creator: true,
+      brand_website_social_platforms: ["Website", "Social Platform"],
+      do_you_need_to_ship_your_product_to_the_creators: true,
+      upload_script_or_other_assets: ["Script", "Assets"],
+    },
+    "67924abd5d6bf8bbb283f2d5"
+    ).then((res) => {
+      console.log(res);
+    });
+  };
+
+  const deleteCampaign = () => {
+    api.delete("Campaigns", "67924abd5d6bf8bbb283f2d5").then((res) => {
+      console.log(res);
+    });
+  };
+
   return (
     <div className="allCamp-container">
       <div className="allCamp-header">
@@ -30,6 +112,9 @@ const AllCampaigns = () => {
             <span className="allCamp-active">All Campaigns</span>
           </div>
         </div>
+        <Button type="primary" className="allCamp-new-campaign-btn" onClick={createCampaign}>
+          + New Campaign (Order Form)
+        </Button>
         <Link to={'order-form'}>
         <Button type="primary" className="allCamp-new-campaign-btn">
           + New Campaign (Order Form)
