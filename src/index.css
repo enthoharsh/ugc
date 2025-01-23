@@ -526,7 +526,7 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 
 .campaign-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
