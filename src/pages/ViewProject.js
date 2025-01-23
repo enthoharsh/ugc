@@ -12,6 +12,7 @@ import {
   PaperClipOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import CampaignInfo from './CampaignInfo';
 
 const { Paragraph } = Typography;
 const { Content, Sider } = Layout;
@@ -195,6 +196,7 @@ const ViewProject = () => {
         <div className="nav-tabs">
           <span className={`${tabKey==1?"active":""}`} onClick={()=>setTabKey(1)}>Overview</span>
           <span className={`${tabKey==2?"active":""}`} onClick={()=>setTabKey(2)}>Messages</span>
+          <span className={`${tabKey==3?"active":""}`} onClick={()=>setTabKey(3)}>Project Details</span>
         </div>
       </Card>
 
@@ -288,6 +290,7 @@ const ViewProject = () => {
       {
         tabKey==2&&<ChatInterface/>
       }
+      {tabKey==3&&<CampaignInfo/>}
     </div>
   );
 };
