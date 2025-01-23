@@ -77,6 +77,7 @@ const CampaignInfo = () => {
         </Form>
       </Modal>
     <div className="campaign-container">
+    <Title level={2}>Project Details</Title>
       <div className="campaign-header">
         {/* Back Button */}
 
