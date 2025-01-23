@@ -201,7 +201,7 @@ const BottomTables = () => {
     },
     {
       key: "action",
-      render: () => <RightOutlined style={{ color: "#8c8c8c" }} />,
+      render: () => <Link to={`view-contract/${1}`}><RightOutlined style={{ color: "#8c8c8c" }} /></Link>,
       width: 50,
     },
   ];

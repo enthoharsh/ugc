@@ -27,7 +27,9 @@ export const AppViews = () => {
         <Route path={`${APP_PREFIX_PATH}/creators/dashboard`} component={lazy(() => import(`./home`))} />
         <Route path={`${APP_PREFIX_PATH}/creators/account-settings`} component={lazy(() => import(`../../pages/AccountSettings`))} />
         <Route exact path={`${APP_PREFIX_PATH}/creators/all-contracts`} component={lazy(() => import(`../../pages/AllContracts`))} />
-        <Route path={`${APP_PREFIX_PATH}/creators/marketplace`} component={lazy(() => import(`../../pages/MarketPlace`))} />
+        <Route exact path={`${APP_PREFIX_PATH}/creators/view-contract/:id`} component={lazy(() => import(`../../pages/ViewProject`))} />
+        <Route exact path={`${APP_PREFIX_PATH}/creators/marketplace`} component={lazy(() => import(`../../pages/MarketPlace`))} />
+        <Route exact path={`${APP_PREFIX_PATH}/creators/marketplace/view-project/:id`} component={lazy(() => import(`../../pages/CampaignInfo`))} />
         <Route path={`${APP_PREFIX_PATH}/creators/portfolio`} component={lazy(() => import(`../../pages/Profile`))} />
         {/* <Route path={`${APP_PREFIX_PATH}/jobs`} component={lazy(() => import(`../../pages/Jobs`))} />
         <Route path={`${APP_PREFIX_PATH}/notification`} component={lazy(() => import(`../../pages/Notification`))} />

@@ -1,5 +1,8 @@
+import { Input, Select } from 'antd';
 import MarketPlaceCard from 'components/MarketplaceCard'
 import React from 'react'
+import {SearchOutlined} from '@ant-design/icons'
+const { Option } = Select;
 const products = [
     {
       id: 1,
@@ -48,6 +51,19 @@ const products = [
   ];
 const MarketPlace = () => {
   return (
+    <>
+    <div className="allCamp-filters">
+        <Input
+          placeholder="Search..."
+          prefix={<SearchOutlined />}
+          className="allCamp-search-input"
+        />
+        <Select defaultValue="Featured" className="allCamp-sort-select">
+          <Option value="Featured">Sort By: Featured</Option>
+          <Option value="date">Date</Option>
+          <Option value="name">Name</Option>
+        </Select>
+      </div>
     <div className='d-flex' style={{gap:'10px',flexWrap:'wrap'}}>
         {
             products.map((elm,i)=>{
@@ -59,6 +75,7 @@ const MarketPlace = () => {
             })
         }
     </div>
+    </>
   )
 }
 

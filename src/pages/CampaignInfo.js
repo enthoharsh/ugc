@@ -77,21 +77,22 @@ const CampaignInfo = () => {
         </Form>
       </Modal>
     <div className="campaign-container">
+    <Title level={2}>Project Details</Title>
       <div className="campaign-header">
         {/* Back Button */}
 
-        <Button type="link" className="back-button">
+        {/* <Button type="link" className="back-button">
           &lt; Back
-        </Button>
-        <div style={{display:'flex',gap:'8px'}}>
+        </Button> */}
+        <div style={{display:'flex',gap:'8px',marginLeft:'auto'}}>
         <Button className="primary-color-btn" onClick={showModal}>
             Submit Application
         </Button>
-        <Link to={`#`}>
+        {/* <Link to={`#`}>
           <Button className="secondary-color-btn">
             <span>View Application</span> <EyeOutlined />
           </Button>
-        </Link>
+        </Link> */}
         </div>
       </div>
 
