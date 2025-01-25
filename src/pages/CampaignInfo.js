@@ -1,14 +1,20 @@
 // import "./css/campainInfo.css";
-import React, { useState } from "react";
-import { Row, Col, Card, Typography, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams,useHistory } from 'react-router-dom';
+import { Row, Col, Card, Typography, Button, InputNumber, message } from "antd";
 import { DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { BagIcon, BudgetIcon, CalenderIcon, MonitorPlatformIcon, VideoCamIcon } from "components/icons";
 import { Modal, Form, Input, DatePicker } from "antd";
+import { api } from 'auth/FetchInterceptor';
+
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
 const CampaignInfo = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const { id } = useParams(); 
+  const history = useHistory();
     const showModal = () => {
         setIsModalOpen(true);
       };
@@ -17,10 +23,36 @@ const CampaignInfo = () => {
         setIsModalOpen(false);
       };
     
-      const onFinish = (values) => {
+      const onFinish = async (values) => {
         console.log("Form Values: ", values);
-        setIsModalOpen(false);
+        const data = {
+          ...values,
+          campaign_id:id,
+          user_id:localStorage.getItem('user_id') || 1
+        }
+        const resp = await api.save('Applications',data);
+        console.log("res",resp);
+        if (resp.statusCode==200) {
+          message.success(resp.message)
+          setIsModalOpen(false);
+          form.resetFields()
+        } else {
+          console.log(resp.error);
+          form.resetFields()
+          message.error(resp.message)
+        }
       };
+      const getCampaignInfo =()=>{
+
+      }
+  useEffect(() => {
+    if (id) {
+      getCampaignInfo({})
+    } else {
+      history.goBack()
+    }
+  }, [id])
+  
   return (
     <>
         <Modal
@@ -30,20 +62,20 @@ const CampaignInfo = () => {
         footer={null}
         width={'60%'}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form layout="vertical" form={form} onFinish={onFinish}>
           <Form.Item
             label="Project Amount"
-            name="projectAmount"
+            name="amount"
             rules={[
               { required: true, message: "Please enter the project amount!" },
             ]}
           >
-            <Input placeholder="What is the price that you want to pitch for this project?" />
+            <InputNumber style={{width:'100%'}} placeholder="What is the price that you want to pitch for this project?" />
           </Form.Item>
 
           <Form.Item
             label="Cover Letter"
-            name="coverLetter"
+            name="cover_letter"
             rules={[
               { required: true, message: "Please write a cover letter!" },
             ]}
@@ -53,7 +85,7 @@ const CampaignInfo = () => {
 
           <Form.Item
             label="Project Deadline (from you)"
-            name="projectDeadline"
+            name="deadline_date"
             rules={[
               { required: true, message: "Please select a deadline!" },
             ]}
