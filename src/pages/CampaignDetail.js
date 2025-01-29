@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from 'react-router-dom';
-import { Card, Drawer, Button, Row, Col, Tag, Typography, Avatar, message } from "antd";
+import { Card, Drawer, Button, Row, Col, Tag, Typography, Avatar, message, Modal } from "antd";
 import {
   EyeOutlined,
   EyeFilled,
@@ -20,6 +20,10 @@ const CampaignDetail = () => {
   const { id } = useParams();
   const history = useHistory();
   const [campaignInfo, setCampaignInfo] = useState({});
+  const [applications, setApplications] = useState([]);
+  const [contracts, setContracts] = useState([]);
+  const [reload, setReload] = useState(Math.random());
+  const { confirm } = Modal;
 
   const projects = [
     {
@@ -70,7 +74,6 @@ const CampaignDetail = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [activeTabKey, setActiveTabKey] = useState("all");
-
     const showDrawer = (details) => {
       setSelectedDetails(details);
       setDrawerVisible(true);
@@ -233,38 +236,41 @@ const CampaignDetail = () => {
         key: "name",
         render: (text, record) => (
           <div className="name-container">
-            <Avatar src={"https://i.pravatar.cc/101"} className="avatar-style">
-              <span className="avatar-text">CA</span>
+            <Avatar src={record.created_by.profile_picture} className="avatar-style">
+              <span className="avatar-text">
+                {record.created_by.name.charAt(0).toUpperCase()} {record.created_by.name.charAt(1).toUpperCase()}
+              </span>
             </Avatar>
             <div className="name-details">
-              <div className="name-text">{text}</div>
-              <div className="location-text">{record.location}</div>
+              <div className="name-text">{record.created_by.name}</div>
             </div>
           </div>
         ),
       },
       {
         title: "Quote",
-        dataIndex: "quote",
+        dataIndex: "amount",
         width: "10%",
-        key: "quote",
+        key: "amount",
+        render: (text) => <span>$ {text}</span>,
       },
       {
         title: "Details",
-        dataIndex: "details",
+        dataIndex: "cover_letter",
         width: "28%",
-        key: "details",
+        key: "cover_letter",
+        render: (text) => <span>{text.length > 50 ? text.substring(0, 50) + "..." : text}</span>,
       },
       {
         title: "Criteria",
-        key: "criteria",
-        dataIndex: "criteria",
+        key: "criterias",
+        dataIndex: "criterias",
         width: "35%",
-        render: (tags) => (
+        render: (criterias) => (
           <div className="criteria-container">
-            {tags.map((tag) => (
-              <Tag key={tag} className="criteria-tag">
-                {tag}
+            {criterias.map((criteria) => (
+              <Tag key={criteria} className="criteria-tag">
+                {criteria}
               </Tag>
             ))}
           </div>
@@ -278,7 +284,7 @@ const CampaignDetail = () => {
         render: (status) => {
           let statusClass = "status-default";
           if (status === "Hired") statusClass = "status-hired";
-          if (status === "Reviewing") statusClass = "status-reviewing";
+          if (status === "Shortlisted") statusClass = "status-shortlisted";
           if (status === "Rejected") statusClass = "status-rejected";
           if (status === "Applied") statusClass = "status-applied";
 
@@ -293,7 +299,7 @@ const CampaignDetail = () => {
           <Space size="middle" className="action-container">
             <>
               {!obj.isLike ? (
-                <LikeOutlined onClick={() => applicationHired(obj._id)} />
+                <LikeOutlined onClick={() => applicationShortlist(obj._id)} />
               ) : (
                 <LikeFilled style={{ color: "#16a34a" }} />
               )}
@@ -313,19 +319,46 @@ const CampaignDetail = () => {
     ];
 
     const applicationHired = async (_id) => {
-      const resp = await api.update("Applications", { status: 'Hired' }, _id);
-      if (resp.success) {
-        message.success(resp.message)
-      } else {
-        console.log(resp.error);
-        message.error(resp.message)
-      }
+      confirm({
+        title: 'Do you want to hire this applicant?',
+        content: 'This action cannot be undone as we will create a contract for this applicant.',
+        onOk() {
+          const hire = async () => {
+            const resp = await api.update("Applications", { status: 'Hired' }, _id);
+            if (resp.success) {
+              await api.save("Contracts", {
+                campaign_id: id,
+                application_id: _id,
+                user_id: selectedDetails.created_by._id,
+                start_date: new Date(),
+                end_date: new Date(selectedDetails.deadline_date),
+                amount: selectedDetails.amount,
+                status: 'In Progress',
+                timeline: [{ type: "contract_started", data: { text: "You started the contract", date: new Date(), amount: selectedDetails.amount } }],
+              });
+
+              message.success(resp.message)
+              setReload(Math.random())
+            } else {
+              console.log(resp.error);
+              message.error(resp.message)
+            }
+
+          };
+
+          hire();
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
     }
 
     const applicationReject = async (_id) => {
       const resp = await api.update("Applications", { status: 'Rejected' }, _id);
       if (resp.success) {
         message.success(resp.message)
+        setReload(Math.random())
       } else {
         console.log(resp.error);
         message.error(resp.message)
@@ -333,9 +366,10 @@ const CampaignDetail = () => {
     }
 
     const applicationShortlist = async (_id) => {
-      const resp = await api.update("Applications", { status: 'Shortlist' }, _id);
+      const resp = await api.update("Applications", { status: 'Shortlisted' }, _id);
       if (resp.success) {
         message.success(resp.message)
+        setReload(Math.random())
       } else {
         message.error(resp.message)
       }
@@ -349,7 +383,7 @@ const CampaignDetail = () => {
       return (
         <Table
           columns={columns}
-          dataSource={data.filter((item) => {
+          dataSource={applications.filter((item) => {
             if (activeTabKey === 'all') return true;
             return item.status.toLowerCase() === activeTabKey;
           })}
@@ -368,7 +402,7 @@ const CampaignDetail = () => {
         key: "all",
         label: (
           <>
-            All<span className="ml-2 status-badge status-default">80</span>
+            All<span className="ml-2 status-badge status-default">{applications.length}</span>
           </>
         ),
         children: <ContentTable />, // Replace with actual content
@@ -379,19 +413,19 @@ const CampaignDetail = () => {
           <>
             Hired
             <span className="ml-2 text-green-600 status-badge status-hired">
-              18
+              {applications.filter((item) => item.status === "Hired").length}
             </span>
           </>
         ),
         children: <ContentTable />, // Replace with actual content
       },
       {
-        key: "reviewing",
+        key: "shortlisted",
         label: (
           <>
-            Reviewing
-            <span className="ml-2 text-blue-600 status-badge status-reviewing">
-              22
+            Shortlisted
+            <span className="ml-2 text-blue-600 status-badge status-shortlisted">
+              {applications.filter((item) => item.status === "Shortlisted").length}
             </span>
           </>
         ),
@@ -401,18 +435,20 @@ const CampaignDetail = () => {
         key: "applied",
         label: (
           <>
-            Applied<span className="ml-2 status-badge status-applied">11</span>
+            Applied<span className="ml-2 status-badge status-applied">
+              {applications.filter((item) => item.status === "Applied").length}
+            </span>
           </>
         ),
         children: <ContentTable />, // Replace with actual content
       },
       {
-        key: "reject",
+        key: "rejected",
         label: (
           <>
             Rejected
             <span className="ml-2 text-red-600 status-badge status-rejected">
-              32
+              {applications.filter((item) => item.status === "Rejected").length}
             </span>
           </>
         ),
@@ -442,31 +478,32 @@ const CampaignDetail = () => {
               {/* User Details */}
               <div className="name-container mt-4 mb-3">
                 <Avatar
-                  src={"https://i.pravatar.cc/101"}
+                  src={selectedDetails.created_by.profile_picture}
                   className="avatar-style"
                 >
-                  <span className="avatar-text">CA</span>
+                  <span className="avatar-text">
+                    {selectedDetails.created_by.name.charAt(0).toUpperCase()}{" "} {selectedDetails.created_by.name.charAt(1).toUpperCase()}
+                  </span>
                 </Avatar>
                 <div className="name-details">
-                  <div className="name-text">{selectedDetails.name}</div>
-                  <div className="location-text">{selectedDetails.location}</div>
+                  <div className="name-text">{selectedDetails.created_by.name}</div>
                 </div>
               </div>
               <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
                 <div style={{ width: "20%" }}>Quote :</div>
-                <div style={{ width: "80%" }}>{selectedDetails.quote}</div>
+                <div style={{ width: "80%" }}>$ {selectedDetails.amount}</div>
               </div>
               <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
                 <div style={{ width: "20%" }}>Proposed Deadline </div>
                 <div style={{ width: "80%" }}>
-                  {selectedDetails.proposedDeadline ? selectedDetails.proposedDeadline : "2024-12-01"}
+                  {new Date(selectedDetails.deadline_date).toDateString()}
                 </div>
               </div>
               <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
                 <div style={{ width: "20%" }}>Criteria :</div>
                 <div style={{ width: "80%" }}>
                   <div className="criteria-container">
-                    {selectedDetails.criteria.map((tag) => (
+                    {selectedDetails.criterias.map((tag) => (
                       <Tag key={tag} className="criteria-tag">
                         {tag}
                       </Tag>
@@ -485,11 +522,11 @@ const CampaignDetail = () => {
                     maxHeight: "200px",
                     overflowY: "auto",
                   }}>
-                    Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi.Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi. Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi.
+                    {selectedDetails.cover_letter}
                   </p>
                 </div>
               </div>
-              <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
+              {/* <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
                 <div style={{ width: "20%" }}>Portfolio :</div>
                 <div style={{ width: "80%" }}>
                   <a
@@ -501,7 +538,7 @@ const CampaignDetail = () => {
                     View Profile ↗
                   </a>
                 </div>
-              </div>
+              </div> */}
 
               {/* Action Buttons */}
               <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
@@ -517,7 +554,7 @@ const CampaignDetail = () => {
                   style={{ background: "#e0f2fe", color: "#0284c7" }}
                   onClick={() => applicationShortlist(selectedDetails._id)}
                 >
-                  Shortlist
+                  Shortlisted
                 </Button>
                 <Button
                   type="default"
@@ -557,9 +594,12 @@ const CampaignDetail = () => {
       campaign_id: id
     });
 
+    console.log(CampaignResp, ContractsResponse, ApplicationsResponse);
+
+
     setCampaignInfo(CampaignResp.data)
-    console.log(ContractsResponse);
-    console.log(ApplicationsResponse);
+    setContracts(ContractsResponse.data.data)
+    setApplications(ApplicationsResponse.data.data)
   }
 
   useEffect(() => {
@@ -570,7 +610,7 @@ const CampaignDetail = () => {
     } else {
       history.goBack()
     }
-  }, [id])
+  }, [id, reload])
 
   return (
     <>
@@ -589,13 +629,13 @@ const CampaignDetail = () => {
           Campaigns • All Campaigns • {campaignInfo.campaign_name}
         </Text>
         <Row gutter={[24, 24]} className="project-grid">
-          {projects.map((project, index) => (
+          {contracts.map((contract, index) => (
             <>
               {" "}
               <div
                 className="project-card"
                 style={{ display: "flex" }}
-                key={project.id}
+                key={contract._id}
               >
                 <div
                   style={{
@@ -604,7 +644,7 @@ const CampaignDetail = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Avatar src={project.image} size={50} />
+                  <Avatar src={contract.user.profile_picture} size={50} />
                 </div>
                 <div style={{ width: "77%" }}>
                   <div
@@ -612,19 +652,21 @@ const CampaignDetail = () => {
                   >
                     <span>
                       <Tag color="green" className="status-tag">
-                        {project.status}
+                        Hired
                       </Tag>
                     </span>
                     <span>
-                      <Text className="price">{project.price}</Text>
+                      <Text className="price">
+                        ${contract.amount}
+                      </Text>
                     </span>
                   </div>
                   <div>
-                    <Text className="name mt-2 mb-2">{project.name}</Text>
+                    <Text className="name mt-2 mb-2">{contract.user.name}</Text>
                     <Text className="deadline d-block mb-2">
-                      Deadline: {project.deadline}
+                      Deadline: {new Date(contract.end_date).toDateString()}
                     </Text>
-                    <Link to={"view-project/1"} className="view-project-btn">
+                    <Link to={"view-project/" + contract._id} className="view-project-btn">
                       View Project
                     </Link>
                   </div>

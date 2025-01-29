@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Timeline, Card, Row, Col, Typography, Tag, Avatar } from 'antd';
 import { ClockCircleOutlined, DollarOutlined, VideoCameraOutlined, InstagramOutlined } from '@ant-design/icons';
 import { BagIcon, BudgetIcon, CalenderIcon, MonitorPlatformIcon, VideoCamIcon } from 'components/icons';
-import { Layout, 
- Button,
- Input,
-Upload,
- } from 'antd';
-import { 
-  SendOutlined, 
+import {
+  Layout,
+  Button,
+  Input,
+  Upload,
+} from 'antd';
+import {
+  SendOutlined,
   PaperClipOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
 import CampaignInfo from './CampaignInfo';
+import { useParams, useHistory } from 'react-router-dom';
+import { api } from 'auth/FetchInterceptor';
 
 const { Paragraph } = Typography;
 const { Content, Sider } = Layout;
@@ -83,8 +86,8 @@ const ChatInterface = () => {
           ))}
         </div>
         <div className="chat-input">
-          <TextArea 
-            placeholder="Type a message" 
+          <TextArea
+            placeholder="Type a message"
             autoSize={{ minRows: 1, maxRows: 4 }}
           />
           <div className="input-actions">
@@ -99,7 +102,7 @@ const ChatInterface = () => {
         <Card title="PROJECT TIMELINE" className="timeline-card">
           <Timeline>
             {timelineItems.map((item, index) => (
-              <Timeline.Item 
+              <Timeline.Item
                 key={index}
                 dot={item.hasAttachment ? <PaperClipOutlined /> : <ClockCircleOutlined />}
               >
@@ -108,18 +111,18 @@ const ChatInterface = () => {
                     <Text strong>{item.title}</Text>
                     <Text type="secondary">{item.date}</Text>
                   </div>
-                  
+
                   {item.amount && (
                     <Text strong className="timeline-amount">{item.amount}</Text>
                   )}
-                  
+
                   {item.trackingId && (
                     <div className="timeline-tracking">
                       <Text>Tracking ID</Text>
                       <Text code>{item.trackingId}</Text>
                     </div>
                   )}
-                  
+
                   {item.hasAttachment && (
                     <div className="timeline-attachment">
                       <Text>1 attachment</Text>
@@ -128,7 +131,7 @@ const ChatInterface = () => {
                       </Button>
                     </div>
                   )}
-                  
+
                   {item.hasNotes && (
                     <div className="timeline-notes">
                       <Text type="secondary">{item.notes}</Text>
@@ -153,54 +156,74 @@ const ChatInterface = () => {
 
 
 const ViewProject = () => {
-    const [tabKey, setTabKey] = useState(1)
+  const [tabKey, setTabKey] = useState(1);
+  const [contractInfo, setContractInfo] = useState({});
+  const { id } = useParams();
+
+  const getContractDetails = async (payload) => {
+    const CampaignResp = await api.getSingle(`Contracts`, payload);
+    if (CampaignResp) {
+      setContractInfo(CampaignResp);
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      getContractDetails({
+        _id: id
+      })
+    } else {
+      history.goBack()
+    }
+  }, [id])
+
   return (
     <div className="project-container">
-        <Title level={2}>North Face Jacket Campaign</Title>
+      <Title level={2}>North Face Jacket Campaign</Title>
       <Card className="header-card">
         <Row align="middle" justify="space-between">
           <Col>
-          <div
-                className="project-card"
-                style={{ display: "flex",padding:0,border:'none',background:'transparent' }}
+            <div
+              className="project-card"
+              style={{ display: "flex", padding: 0, border: 'none', background: 'transparent' }}
+            >
+              <div
+                style={{
+                  width: "23%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
+                <Avatar src={'https://i.pravatar.cc/100'} size={50} />
+              </div>
+              <div style={{ width: "77%" }}>
                 <div
-                  style={{
-                    width: "23%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
+                  style={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  <Avatar src={'https://i.pravatar.cc/100'} size={50} />
+                  <span>
+                    <Tag color="green" className="status-tag">
+                      Hired
+                    </Tag>
+                  </span>
                 </div>
-                <div style={{ width: "77%" }}>
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <span>
-                      <Tag color="green" className="status-tag">
-                        Hired
-                      </Tag>
-                    </span>
-                  </div>
-                  <div>
-                    <Text className="name mt-2 mb-2">Colten Aguilar</Text>
-                  </div>
+                <div>
+                  <Text className="name mt-2 mb-2">Colten Aguilar</Text>
                 </div>
               </div>
+            </div>
           </Col>
           <Col>
             <Text className="price">$300</Text>
           </Col>
         </Row>
         <div className="nav-tabs">
-          <span className={`${tabKey==1?"active":""}`} onClick={()=>setTabKey(1)}>Overview</span>
-          <span className={`${tabKey==2?"active":""}`} onClick={()=>setTabKey(2)}>Messages</span>
-          <span className={`${tabKey==3?"active":""}`} onClick={()=>setTabKey(3)}>Project Details</span>
+          <span className={`${tabKey == 1 ? "active" : ""}`} onClick={() => setTabKey(1)}>Overview</span>
+          <span className={`${tabKey == 2 ? "active" : ""}`} onClick={() => setTabKey(2)}>Messages</span>
+          <span className={`${tabKey == 3 ? "active" : ""}`} onClick={() => setTabKey(3)}>Project Details</span>
         </div>
       </Card>
 
-      {tabKey==1&&<Row gutter={24} className="content-section">
+      {tabKey == 1 && <Row gutter={24} className="content-section">
         <Col span={16}>
           <Card>
             <Title level={4} className='mb-4'>Project Timeline</Title>
@@ -241,8 +264,8 @@ const ViewProject = () => {
 
         <Col span={8}>
           <Card className="side-card">
-            <div style={{display:'flex',gap:'10px'}}>
-              <div><CalenderIcon/></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div><CalenderIcon /></div>
               <div>
                 <Paragraph>
                   <div>Date Posted:</div>
@@ -250,8 +273,8 @@ const ViewProject = () => {
                 </Paragraph>
               </div>
             </div>
-            <div style={{display:'flex',gap:'10px'}}>
-              <div><BagIcon/></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div><BagIcon /></div>
               <div>
                 <Paragraph>
                   <div>Type:</div>
@@ -259,38 +282,38 @@ const ViewProject = () => {
                 </Paragraph>
               </div>
             </div>
-            <div style={{display:'flex',gap:'10px'}}>
-              <div><VideoCamIcon/></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div><VideoCamIcon /></div>
               <div>
-              <Paragraph>
-              <div>Videos Required:</div> <strong>15s x2, 60s x1</strong>
-            </Paragraph>
+                <Paragraph>
+                  <div>Videos Required:</div> <strong>15s x2, 60s x1</strong>
+                </Paragraph>
               </div>
             </div>
-            <div style={{display:'flex',gap:'10px'}}>
-              <div><MonitorPlatformIcon/></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div><MonitorPlatformIcon /></div>
               <div>
-              <Paragraph>
-              <div>Platform & Ratio:</div>
-              <strong> Instagram, TikTok. Aspect ratio: 4:5</strong>
-            </Paragraph>
+                <Paragraph>
+                  <div>Platform & Ratio:</div>
+                  <strong> Instagram, TikTok. Aspect ratio: 4:5</strong>
+                </Paragraph>
               </div>
             </div>
-            <div style={{display:'flex',gap:'10px'}}>
-              <div><BudgetIcon/></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div><BudgetIcon /></div>
               <div>
-              <Paragraph>
-              <div>Budget:</div> <strong>$500</strong>
-            </Paragraph>
+                <Paragraph>
+                  <div>Budget:</div> <strong>$500</strong>
+                </Paragraph>
               </div>
             </div>
           </Card>
         </Col>
       </Row>}
       {
-        tabKey==2&&<ChatInterface/>
+        tabKey == 2 && <ChatInterface />
       }
-      {tabKey==3&&<CampaignInfo/>}
+      {tabKey == 3 && <CampaignInfo id={contractInfo.campaign_id} />}
     </div>
   );
 };

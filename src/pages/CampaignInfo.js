@@ -11,10 +11,18 @@ import { api } from 'auth/FetchInterceptor';
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
-const CampaignInfo = () => {
+const CampaignInfo = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
-  const { id } = useParams();
+  let { id } = useParams();
+
+  if (props.id) {
+    id = props.id
+  }
+
+  console.log(id);
+
+
   const history = useHistory();
   const [campaignInfo, setCampaignInfo] = useState(null);
 
@@ -27,10 +35,7 @@ const CampaignInfo = () => {
   };
 
   const onFinish = async (values) => {
-
     console.log(values);
-    return;
-    
 
     const data = {
       ...values,
@@ -229,7 +234,7 @@ const CampaignInfo = () => {
                 <div>
                   <Paragraph>
                     <div>Date Posted:</div>
-                    <strong> 
+                    <strong>
                       {new Date(campaignInfo.createdAt).toLocaleDateString()}
                     </strong>
                   </Paragraph>
@@ -240,7 +245,7 @@ const CampaignInfo = () => {
                 <div>
                   <Paragraph>
                     <div>Type:</div>
-                    <strong> 
+                    <strong>
                       {campaignInfo.video_type}
                     </strong>
                   </Paragraph>
@@ -268,7 +273,7 @@ const CampaignInfo = () => {
                 <div>
                   <Paragraph>
                     <div>Budget:</div>
-                     <strong>${campaignInfo.campaign_budget}</strong>
+                    <strong>${campaignInfo.campaign_budget}</strong>
                   </Paragraph>
                 </div>
               </div>
@@ -284,7 +289,7 @@ export default CampaignInfo;
 
 const CriteriaSelection = ({ campaignInfo, value = [], onChange }) => {
   const handleTagChange = (tag, checked) => {
-    const nextSelectedTags = checked 
+    const nextSelectedTags = checked
       ? [...value, tag]
       : value.filter(t => t !== tag);
     onChange?.(nextSelectedTags);
@@ -315,7 +320,7 @@ const CriteriaSelection = ({ campaignInfo, value = [], onChange }) => {
                   key={tag}
                   checked={value.includes(tag)}
                   onChange={checked => handleTagChange(tag, checked)}
-                  // className={`radio-option-box ${value.includes(tag) ? 'selected' : ''}`}
+                // className={`radio-option-box ${value.includes(tag) ? 'selected' : ''}`}
                 >
                   {tag}
                 </Tag.CheckableTag>
