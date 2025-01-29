@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams,useHistory } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { Card, Drawer, Button, Row, Col, Tag, Typography, Avatar, message } from "antd";
 import {
   EyeOutlined,
@@ -17,8 +17,10 @@ const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
 const CampaignDetail = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const history = useHistory();
+  const [campaignInfo, setCampaignInfo] = useState({});
+
   const projects = [
     {
       id: 1,
@@ -64,7 +66,6 @@ const CampaignDetail = () => {
     // Repeat the project data as needed
   ];
 
-
   const BottomTables = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
@@ -72,7 +73,7 @@ const CampaignDetail = () => {
       setSelectedDetails(details);
       setDrawerVisible(true);
     };
-  
+
     const closeDrawer = () => {
       setDrawerVisible(false);
       setSelectedDetails(null);
@@ -220,7 +221,7 @@ const CampaignDetail = () => {
       },
       // Add more data as needed
     ];
-  
+
     const columns = [
       {
         title: "Name",
@@ -277,7 +278,7 @@ const CampaignDetail = () => {
           if (status === "Reviewing") statusClass = "status-reviewing";
           if (status === "Rejected") statusClass = "status-rejected";
           if (status === "Applied") statusClass = "status-applied";
-  
+
           return <span className={`status-badge ${statusClass}`}>{status}</span>;
         },
       },
@@ -289,7 +290,7 @@ const CampaignDetail = () => {
           <Space size="middle" className="action-container">
             <>
               {!obj.isLike ? (
-                <LikeOutlined onClick={()=>applicationHired(obj.id||1)} />
+                <LikeOutlined onClick={() => applicationHired(obj.id || 1)} />
               ) : (
                 <LikeFilled style={{ color: "#16a34a" }} />
               )}
@@ -301,16 +302,16 @@ const CampaignDetail = () => {
               />
             </>
             <>
-              <CloseOutlined onClick={()=>applicationReject(obj.id||1)} style={{ color: "red" }} />
+              <CloseOutlined onClick={() => applicationReject(obj.id || 1)} style={{ color: "red" }} />
             </>
           </Space>
         ),
       },
     ];
-    const applicationHired=async(userObjId)=>{
+    const applicationHired = async (userObjId) => {
       console.log(userObjId);
-      const resp = await api.update("Applications",{status:'hired',user_id:userObjId,campaign_id:id})
-      if (resp.statusCode==200) {
+      const resp = await api.update("Applications", { status: 'hired', user_id: userObjId, campaign_id: id })
+      if (resp.statusCode == 200) {
         message.success(resp.message)
       } else {
         console.log(resp.error);
@@ -319,18 +320,18 @@ const CampaignDetail = () => {
     }
     const applicationReject = async (userObjId) => {
       console.log(userObjId);
-      const resp = await api.update("Applications",{status:'reject',user_id:userObjId,campaign_id:id})
-      if (resp.statusCode==200) {
+      const resp = await api.update("Applications", { status: 'reject', user_id: userObjId, campaign_id: id })
+      if (resp.statusCode == 200) {
         message.success(resp.message)
       } else {
         console.log(resp.error);
         message.error(resp.message)
       }
     }
-    const applicationShortlist = async (userObjId) =>{
+    const applicationShortlist = async (userObjId) => {
       console.log(userObjId);
-      const resp = await api.update("Applications",{status:'shortlist',user_id:userObjId,campaign_id:id})
-      if (resp.statusCode==200) {
+      const resp = await api.update("Applications", { status: 'shortlist', user_id: userObjId, campaign_id: id })
+      if (resp.statusCode == 200) {
         message.success(resp.message)
       } else {
         console.log(resp.error);
@@ -339,10 +340,10 @@ const CampaignDetail = () => {
     }
     const onTabChange = (key) => {
       console.log(key, "key");
-      if (key=='all') {
-        getCampaignDetails({id:id})
+      if (key == 'all') {
+        getCampaignDetails({ id: id })
       } else {
-        getCampaignDetails({id:id,status:key})
+        getCampaignDetails({ id: id, status: key })
       }
     };
     const ContentTable = () => {
@@ -473,51 +474,51 @@ const CampaignDetail = () => {
                 <div style={{ width: "20%" }}>Details :</div>
                 <div style={{ width: "80%" }}>
                   <p style={{
-                  border: "1px solid #f0f0f0",
-                  padding: "8px",
-                  borderRadius: "4px",
-                  background: "#fafafa",
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                }}>
-                  Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi.Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi. Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi.
+                    border: "1px solid #f0f0f0",
+                    padding: "8px",
+                    borderRadius: "4px",
+                    background: "#fafafa",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                  }}>
+                    Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi.Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi. Praesent egestas tristique nibh. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla facilisi.
                   </p>
                 </div>
               </div>
               <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
                 <div style={{ width: "20%" }}>Portfolio :</div>
                 <div style={{ width: "80%" }}>
-                <a
-                  href={'https://www.google.com'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "#d946ef" }}
-                >
-                  View Profile ↗
-                </a>
+                  <a
+                    href={'https://www.google.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#d946ef" }}
+                  >
+                    View Profile ↗
+                  </a>
                 </div>
               </div>
-  
+
               {/* Action Buttons */}
               <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
                 <Button
                   type="primary"
                   style={{ background: "#f97316", border: "none" }}
-                  onClick={()=>applicationHired(selectedDetails.id || 1)}
+                  onClick={() => applicationHired(selectedDetails.id || 1)}
                 >
                   Hire
                 </Button>
                 <Button
                   type="default"
                   style={{ background: "#e0f2fe", color: "#0284c7" }}
-                  onClick={()=>applicationShortlist(selectedDetails.id || 1)}
+                  onClick={() => applicationShortlist(selectedDetails.id || 1)}
                 >
                   Shortlist
                 </Button>
                 <Button
                   type="default"
                   style={{ background: "#fee2e2", color: "#b91c1c" }}
-                  onClick={()=>applicationReject(selectedDetails.id || 1)}
+                  onClick={() => applicationReject(selectedDetails.id || 1)}
                 >
                   Reject
                 </Button>
@@ -541,36 +542,47 @@ const CampaignDetail = () => {
     );
   };
 
+  const getCampaignDetails = async (payload) => {
+    const CampaignResp = await api.getSingle(`Campaigns`, payload);
 
-      const getCampaignDetails = async (payload)=>{
-        const resp = await api.get(`Applications`,payload);
-        if (resp.statusCode==200) {
-          console.log(resp)
-        } else {
-          console.log(resp.error);
-          message.error(resp.message)
-        }
-      }
+    const ContractsResponse = await api.get(`Contracts`, {
+      campaign_id: id
+    });
+
+    const ApplicationsResponse = await api.get(`Applications`, {
+      campaign_id: id
+    });
+
+    setCampaignInfo(CampaignResp.data)
+    console.log(ContractsResponse);
+    console.log(ApplicationsResponse);
+  }
+
   useEffect(() => {
     if (id) {
-      getCampaignDetails({id})
+      getCampaignDetails({ 
+        _id: id 
+      })
     } else {
       history.goBack()
     }
   }, [id])
+
   return (
     <>
       <div className="campaign-container">
         <div className="campaign-header">
-          <Title level={2}>North Face Jacket Campaign</Title>
+          <Title level={2}>
+            {campaignInfo.campaign_name}
+          </Title>
           <Link to={`campaign-info/${id}`}>
-          <Button className="secondary-color-btn">
-            <span>View Campaign Info</span> <EyeOutlined />
-          </Button>
+            <Button className="secondary-color-btn">
+              <span>View Campaign Info</span> <EyeOutlined />
+            </Button>
           </Link>
         </div>
         <Text className="breadcrumb">
-          Campaigns • All Campaigns • North Face Jacket Campaign
+          Campaigns • All Campaigns • {campaignInfo.campaign_name}
         </Text>
         <Row gutter={[24, 24]} className="project-grid">
           {projects.map((project, index) => (

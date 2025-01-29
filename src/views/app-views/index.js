@@ -8,7 +8,7 @@ export const AppViews = () => {
     <Suspense fallback={<Loading cover="content"/>}>
       <Switch>
 
-{/* BRANDS ROUTES */}
+        {/* BRANDS ROUTES */}
 
         <Route path={`${APP_PREFIX_PATH}/brands/dashboard`} component={lazy(() => import(`./home`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/all-contracts`} component={lazy(() => import(`../../pages/AllContracts`))} />
@@ -19,10 +19,8 @@ export const AppViews = () => {
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/campaign-detail/campaign-info/:id`} component={lazy(() => import(`../../pages/CampaignInfo`))} />
         <Route path={`${APP_PREFIX_PATH}/brands/account-settings`} component={lazy(() => import(`../../pages/AccountSettings`))} />
 
-{/* BRANDS ROUTES */}
-
-
-{/* CREATORS ROPUTE */}
+        {/* BRANDS ROUTES */}
+        {/* CREATORS ROPUTE */}
 
         <Route path={`${APP_PREFIX_PATH}/creators/dashboard`} component={lazy(() => import(`./home`))} />
         <Route path={`${APP_PREFIX_PATH}/creators/account-settings`} component={lazy(() => import(`../../pages/AccountSettings`))} />

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SettingOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
 import { Drawer, Menu } from 'antd';
 import ThemeConfigurator from './ThemeConfigurator';
 import { connect } from "react-redux";
@@ -24,19 +24,14 @@ export class NavPanel extends Component {
 		return (
       <>
         <Menu mode="horizontal">
-          <Menu.Item onClick={this.showDrawer}>
-            <SettingOutlined className="nav-icon mr-0" />
+          <Menu.Item onClick={() => {
+            localStorage.clear();
+            window.location.href = '/auth/login';
+          }}>
+            {/* <SettingOutlined className="nav-icon mr-0" /> */}
+            <LogoutOutlined className="nav-icon mr-0" />
           </Menu.Item>
         </Menu>
-        <Drawer
-          title="Theme Config"
-          placement={this.props.direction === DIR_RTL ? 'left' : 'right'} 
-          width={350}
-          onClose={this.onClose}
-          visible={this.state.visible}
-        >
-          <ThemeConfigurator/>
-        </Drawer>
       </>
     );
 	}

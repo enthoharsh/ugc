@@ -153,8 +153,7 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 
 .steps-actions button {
   margin: 0 10px;
-  padding: 5px 10px;
-  /* background-color: #ff6600; */
+  padding: 10px 30px;
   background-color: #FC52E4;
   color: #fff;
   border: none;
@@ -371,7 +370,7 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 /* index.css */
 .allCamp-container {
   padding: 24px;
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
 }
 
@@ -422,7 +421,7 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 
 .allCamp-campaign-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 24px;
   margin-bottom: 24px;
 }
@@ -491,6 +490,8 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 .allCamp-platform-tags {
   display: flex;
   gap: 8px;
+  /* flex-wrap: wrap; */
+  overflow: hidden;
 }
 
 .allCamp-platform-tag {
@@ -801,6 +802,10 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 
 .campaign-container .criteria-tags {
   margin-bottom: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 /* List Styling */

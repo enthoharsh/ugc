@@ -15,11 +15,12 @@ import { Tag } from "antd";
 import { Upload, Space } from "antd";
 import { UploadOutlined, GlobalOutlined } from "@ant-design/icons";
 import { api } from "auth/FetchInterceptor";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+
 const { TextArea } = Input;
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
-// RADIO BUTTON WITH TITLE AND DESC
 
 const RadioButtonWithTitleAndDes = ({
   options,
@@ -35,9 +36,8 @@ const RadioButtonWithTitleAndDes = ({
         return (
           <div
             key={ind}
-            className={`radio-option-box ${
-              selectedOption === elm.title ? "selected" : ""
-            }`}
+            className={`radio-option-box ${selectedOption === elm.title ? "selected" : ""
+              }`}
             onClick={() => handleChange(elm.title)}
           >
             {elm.title}
@@ -49,24 +49,9 @@ const RadioButtonWithTitleAndDes = ({
   );
 };
 
-// RADIO BUTTON WITH TITLE AND DESC
-
-// VIDEO FROM CREATER COMPONENT
-
 const VideoDurationSelector = ({ selections, setSelections }) => {
-  const handleSelect = (duration) => {
-    setSelections((prev) => ({
-      ...prev,
-      [duration]: {
-        ...prev[duration],
-        selected: !prev[duration].selected,
-      },
-    }));
-  };
 
   const updateQuantity = (duration, increment) => {
-    if (!selections[duration].selected) return;
-
     setSelections((prev) => ({
       ...prev,
       [duration]: {
@@ -81,11 +66,11 @@ const VideoDurationSelector = ({ selections, setSelections }) => {
       <h3 className="video-selector-title">Videos from creator</h3>
       <div className="card-container">
         {Object.entries(selections).map(
-          ([duration, { selected, quantity, price }]) => (
+          ([duration, { quantity, price }]) => (
             <div
               key={duration}
-              className={`duration-card ${selected ? "selected" : ""}`}
-              onClick={() => handleSelect(duration)}
+              className={`duration-card ${quantity > 0 ? "selected" : ""}`}
+              onClick={() => updateQuantity(duration, 1)}
             >
               <div className="duration-text">Up to {duration} seconds</div>
               <div className="controls-container">
@@ -96,7 +81,6 @@ const VideoDurationSelector = ({ selections, setSelections }) => {
                       e.stopPropagation();
                       updateQuantity(duration, -1);
                     }}
-                    disabled={!selected}
                   >
                     -
                   </button>
@@ -107,7 +91,6 @@ const VideoDurationSelector = ({ selections, setSelections }) => {
                       e.stopPropagation();
                       updateQuantity(duration, 1);
                     }}
-                    disabled={!selected}
                   >
                     +
                   </button>
@@ -121,8 +104,6 @@ const VideoDurationSelector = ({ selections, setSelections }) => {
     </div>
   );
 };
-
-// VIDEO FROM CREATER COMPONENT
 
 const options = {
   gender: ["Female", "Male"],
@@ -161,12 +142,14 @@ const options = {
 
 const Campaigns = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [promotionType, setPromotionType] = useState("Digital Product");
-  const [whatareyoupromoting, setWhatareyoupromoting] =
-    useState("Video Ad Style");
+
+  const [promotionType, setPromotionType] = useState(null);
+  const [whatareyoupromoting, setWhatareyoupromoting] = useState(null);
   const [productName, setProductName] = useState("");
+  const [campaignName, setCampaignName] = useState("");
   const [brandName, setBrandName] = useState("");
   const [brandLogo, setBrandLogo] = useState("");
+  const [uploadScriptOrOtherAssets, setUploadScriptOrOtherAssets] = useState([]);
   const [category, setCategory] = useState([]);
   const [targetAudience, setTargetAudience] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
@@ -174,6 +157,9 @@ const Campaigns = () => {
   const [callToAction, setCallToAction] = useState("");
   const [isGifted, setIsGifted] = useState(false);
   const [needsShipping, setNeedsShipping] = useState(false);
+
+  let history = useHistory();
+
   const categories = [
     "Style",
     "Wellness",
@@ -182,8 +168,9 @@ const Campaigns = () => {
     "Home",
     "Technology",
   ];
-  const [brandWebsiteAndSocialPlatform, setBrandWebsiteAndSocialPlatform] =
-    useState(["", "", ""]);
+
+  const [brandWebsiteAndSocialPlatform, setBrandWebsiteAndSocialPlatform] = useState(["", "", ""]);
+
   const [selectedCriteria, setSelectedCriteria] = useState({
     gender: "",
     age: [],
@@ -204,7 +191,7 @@ const Campaigns = () => {
     }
     if (key == "cat") {
       setCategory((prev) => {
-        return prev.includes(value) ? prev.filter((el)=>el!==value) : [...prev,value]
+        return prev.includes(value) ? prev.filter((el) => el !== value) : [...prev, value]
       });
       return;
     }
@@ -215,6 +202,7 @@ const Campaigns = () => {
         : [...prev[key], value],
     }));
   };
+
   const promotionoptions = [
     {
       title: "Reel Style",
@@ -244,27 +232,22 @@ const Campaigns = () => {
       desc: "Youtube display ads, website",
     },
   ];
+
   const [videosFromCreator, setVideosFromCreator] = useState({
-    15: { selected: true, quantity: 2, price: 50 },
-    30: { selected: false, quantity: 0, price: 70 },
-    60: { selected: true, quantity: 1, price: 99 },
+    15: { quantity: 0, price: 50 },
+    30: { quantity: 0, price: 70 },
+    60: { quantity: 0, price: 99 },
   });
- const [campaignBudget, setCampaignBudget] = useState('')
-  const [videoCounts, setVideoCounts] = useState({
-    short: 2,
-    medium: 0,
-    long: 1,
-  });
+
+  const [campaignBudget, setCampaignBudget] = useState('')
+
   const [platforms, setPlatforms] = useState(["Instagram"]);
   const [aspectRatio, setAspectRatio] = useState("9:16");
-
-  const handleVideoCountChange = (type, value) => {
-    setVideoCounts({ ...videoCounts, [type]: value });
-  };
 
   const handlePlatformChange = (checkedValues) => {
     setPlatforms(checkedValues);
   };
+
   const handleStepChange = (meth) => {
     if (meth == "prev") {
       setCurrentStep(currentStep - 1);
@@ -273,7 +256,7 @@ const Campaigns = () => {
     }
     console.log(selectedCriteria);
   };
-  const proceedToPayment = () => {
+  const createCampaign = () => {
     api
       .save("Campaigns", {
         what_are_you_promoting: whatareyoupromoting,
@@ -288,8 +271,8 @@ const Campaigns = () => {
         accents: selectedCriteria.accent,
         includings: selectedCriteria.including,
         settings: selectedCriteria.settings,
-        any_other_specific_criteria:
-          selectedCriteria.any_other_specific_criteria,
+        any_other_specific_criteria: selectedCriteria.any_other_specific_criteria,
+        campaign_name: campaignName,
         product_name: productName,
         brand_name: brandName,
         product_brand_logo: brandLogo,
@@ -305,24 +288,42 @@ const Campaigns = () => {
         upload_script_or_other_assets: ["Script", "Assets"],
       })
       .then((res) => {
-        console.log(res);
+        history.push("/app/brands/campaigns/all-campaigns");
       });
   };
-  const handleBrandLogoChange = (info) => {
-    // if (info.file.status === "done") {
-    // Check if the file object has an originFileObj for local preview
-    const fileObj = info.file.originFileObj;
-    const url = fileObj
-      ? URL.createObjectURL(fileObj)
-      : info.file.response?.url;
 
-    setBrandLogo(url); // Set the URL for preview
-    console.log(url);
-    //   message.success("Upload successful!");
-    // } else if (info.file.status === "error") {
-    //   message.error("Upload failed.");
-    // }
+  const handleBrandLogoChange = async (info) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(info.file);
+    reader.onload = () => {
+      api.uploadFile("Users", {
+        file: reader.result,
+        extension: info.file.name.split(".").pop(),
+      }).then((res) => {
+        if (res.success) {
+          setBrandLogo(res.url);
+          info.onSuccess();
+        }
+      });
+    };
   };
+
+  const handleScriptOrOtherAssetsChange = async (info) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(info.file);
+    reader.onload = () => {
+      api.uploadFile("Users", {
+        file: reader.result,
+        extension: info.file.name.split(".").pop(),
+      }).then((res) => {
+        if (res.success) {
+          setUploadScriptOrOtherAssets((pre) => [...pre, res.data]);
+          info.onSuccess();
+        }
+      });
+    };
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <Title level={3}>New Campaign</Title>
@@ -525,6 +526,17 @@ const Campaigns = () => {
             }}
           >
             <div className="styled-radio-group">
+              <h3>Campaign name</h3>
+              <Input
+                type="text"
+                placeholder="Name of your campaign"
+                value={campaignName}
+                onChange={(e) => setCampaignName(e.target.value)}
+                className="styled-input"
+              />
+            </div>
+
+            <div className="styled-radio-group">
               <h3>Product name</h3>
               <Input
                 type="text"
@@ -548,7 +560,7 @@ const Campaigns = () => {
 
             <div className="styled-radio-group">
               <h3>Product Brand logo</h3>
-              <Upload onChange={handleBrandLogoChange}>
+              <Upload maxCount={1} customRequest={handleBrandLogoChange}>
                 <Button icon={<UploadOutlined />}>Upload file</Button>
               </Upload>
             </div>
@@ -568,7 +580,8 @@ const Campaigns = () => {
 
             <div className="styled-radio-group">
               <h3>Target audience</h3>
-              <Input
+              <TextArea
+                rows={4}
                 placeholder="What do they have in common?"
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
@@ -578,7 +591,8 @@ const Campaigns = () => {
 
             <div className="styled-radio-group">
               <h3>What do you want to see in the video?</h3>
-              <Input
+              <TextArea
+                rows={4}
                 placeholder="Please describe what you want to see in the video"
                 value={videoDescription}
                 onChange={(e) => setVideoDescription(e.target.value)}
@@ -588,7 +602,8 @@ const Campaigns = () => {
 
             <div className="styled-radio-group">
               <h3>What do you want them to say?</h3>
-              <Input
+              <TextArea
+                rows={4}
                 placeholder="What are the key selling points? What should the creator focus on?"
                 value={script}
                 onChange={(e) => setScript(e.target.value)}
@@ -598,7 +613,8 @@ const Campaigns = () => {
 
             <div className="styled-radio-group">
               <h3>What is the call to action?</h3>
-              <Input
+              <TextArea
+                rows={4}
                 type="text"
                 placeholder="e.g. Order now, Download now, Click the link below etc."
                 value={callToAction}
@@ -680,7 +696,7 @@ const Campaigns = () => {
 
             <div className="styled-radio-group">
               <h3>Upload script or other assets</h3>
-              <Upload>
+              <Upload customRequest={handleScriptOrOtherAssetsChange}>
                 <Button icon={<UploadOutlined />}>Upload files</Button>
               </Upload>
             </div>
@@ -688,22 +704,22 @@ const Campaigns = () => {
         </div>
       )}
       <div className="steps-actions">
-        <button
+        <Button
           disabled={currentStep === 0}
           onClick={() => handleStepChange("prev")}
         >
           Back
-        </button>
+        </Button>
         {currentStep != 2 && (
-          <button
+          <Button
             disabled={currentStep === 2}
             onClick={() => handleStepChange("next")}
           >
             Next
-          </button>
+          </Button>
         )}
         {currentStep == 2 && (
-          <button onClick={() => proceedToPayment()}>Proceed to payment</button>
+          <Button onClick={() => createCampaign()}>Create Campaign</Button>
         )}
       </div>
       {/* Additional step content can be added for other steps here */}
