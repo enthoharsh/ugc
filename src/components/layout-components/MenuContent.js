@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Grid } from "antd";
 import IntlMessage from "../util-components/IntlMessage";
@@ -32,11 +32,28 @@ const setDefaultOpen = (key) => {
 const SideNavContent = (props) => {
 	const { sideNavTheme, routeInfo, hideGroupTitle, localization, onMobileNavToggle } = props;
 	const isMobile = !utils.getBreakPoint(useBreakpoint()).includes('lg')
+  const [isBrand, setIsBrand] = React.useState(false);
+
 	const closeMobileNav = () => {
 		if (isMobile) {
 			onMobileNavToggle(false)
 		}
 	}
+
+  useEffect(() => {
+    try {
+      let main_user = localStorage.getItem("main_user");
+      main_user = JSON.parse(main_user);
+      if (main_user && main_user.role == "Brand") {
+        setIsBrand(true);
+      } else {
+        setIsBrand(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <Menu
       theme={sideNavTheme === SIDE_NAV_LIGHT ? "light" : "dark"}
@@ -46,7 +63,13 @@ const SideNavContent = (props) => {
       defaultOpenKeys={setDefaultOpen(routeInfo?.key)}
       className={hideGroupTitle ? "hide-group-title" : ""}
     >
-      {navigationConfig.map((menu) =>
+      {(navigationConfig).filter((menu) => {
+        if (isBrand) {
+          return menu.key == "b-home";
+        } else {
+          return menu.key != "b-home";
+        }
+      }).map((menu) =>
         menu.submenu.length > 0 ? (
           <Menu.ItemGroup
             key={menu.key}

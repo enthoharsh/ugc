@@ -20,7 +20,7 @@ service.interceptors.request.use(
     const jwtToken = localStorage.getItem(AUTH_TOKEN);
 
     if (jwtToken) {
-      config.headers[TOKEN_PAYLOAD_KEY] = jwtToken;
+      config.headers[TOKEN_PAYLOAD_KEY] = "Bearer " + jwtToken;
     }
 
     if (!jwtToken && !config.headers[PUBLIC_REQUEST_KEY]) {
@@ -83,7 +83,7 @@ export class Api {
       const response = await service.post("/api/" + moduleName + "/get", data)
         .catch((e) => {});
 
-      return response.data;
+      return response;
     } catch (e) {
       if (
         e?.response?.data?.message ||
@@ -100,7 +100,7 @@ export class Api {
   async getSingle(moduleName, data = {}) {
     try {
       const response = await service.post("/api/" + moduleName + "/getSingle", data);
-      return response.data;
+      return response;
     } catch (e) {
       if (
         e?.response?.data?.message ||
@@ -117,7 +117,7 @@ export class Api {
   async customRoute(route, data = {}) {
     try {
       const response = await service.post("/api/" + route, data);
-      return response.data;
+      return response;
     } catch (e) {
       if (
         e?.response?.data?.message ||
@@ -134,7 +134,7 @@ export class Api {
   async save(moduleName, data) {
     try {
       const response = await service.post("/api/" + moduleName + "/create", data)
-      return response.data;
+      return response;
     } catch (e) {
       if (e?.response?.data?.message || e?.response?.data?.errors || e?.response?.data?.errors) {
         return e.response.data;
@@ -148,7 +148,7 @@ export class Api {
     try {
       data._id = id;
       const response = await service.post("/api/" + moduleName + "/update", data);
-      return response.data;
+      return response;
     } catch (e) {
       if (e?.response?.data?.message || e?.response?.data?.errors || e?.response?.data?.errors) {
         return e.response.data;
@@ -161,7 +161,7 @@ export class Api {
   async uploadFile(moduleName, data) {
     try {
       const response = await service.post("/api/" + moduleName + "/uploadFile", data);
-      return response.data;
+      return response;
     } catch (e) {
       if (e?.response?.data?.message || e?.response?.data?.errors || e?.response?.data?.errors) {
         return e.response.data;
@@ -175,7 +175,7 @@ export class Api {
     try {
       const data = { _id: id }
       const response = await service.post("/api/" + moduleName + "/delete", data);
-      return response.data;
+      return response;
     } catch (e) {
       if (e?.response?.data?.message || e?.response?.data?.errors || e?.response?.data?.errors) {
         return e.response.data;

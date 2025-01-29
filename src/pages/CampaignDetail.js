@@ -19,6 +19,7 @@ const { TabPane } = Tabs;
 const CampaignDetail = () => {
   const { id } = useParams();
   const history = useHistory();
+  const [campaignInfo, setCampaignInfo] = useState({});
 
   const projects = [
     {
@@ -545,28 +546,39 @@ const CampaignDetail = () => {
     );
   };
 
-
   const getCampaignDetails = async (payload) => {
-    const resp = await api.get(`Applications`, payload);
-    if (resp.statusCode == 200) {
-      console.log(resp)
-    } else {
-      console.log(resp.error);
-      message.error(resp.message)
-    }
+    const CampaignResp = await api.getSingle(`Campaigns`, payload);
+
+    const ContractsResponse = await api.get(`Contracts`, {
+      campaign_id: id
+    });
+
+    const ApplicationsResponse = await api.get(`Applications`, {
+      campaign_id: id
+    });
+
+    setCampaignInfo(CampaignResp.data)
+    console.log(ContractsResponse);
+    console.log(ApplicationsResponse);
   }
+
   useEffect(() => {
     if (id) {
-      getCampaignDetails({ id })
+      getCampaignDetails({
+        _id: id
+      })
     } else {
       history.goBack()
     }
   }, [id])
+
   return (
     <>
       <div className="campaign-container">
         <div className="campaign-header">
-          <Title level={2}>North Face Jacket Campaign</Title>
+          <Title level={2}>
+            {campaignInfo.campaign_name}
+          </Title>
           <Link to={`campaign-info/${id}`}>
             <Button className="secondary-color-btn">
               <span>View Campaign Info</span> <EyeOutlined />
@@ -574,7 +586,7 @@ const CampaignDetail = () => {
           </Link>
         </div>
         <Text className="breadcrumb">
-          Campaigns • All Campaigns • North Face Jacket Campaign
+          Campaigns • All Campaigns • {campaignInfo.campaign_name}
         </Text>
         <Row gutter={[24, 24]} className="project-grid">
           {projects.map((project, index) => (
