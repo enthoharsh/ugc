@@ -4,7 +4,7 @@ import {
   EyeFilled,
   CloseOutlined,
   LikeFilled,
-  LikeOutlined,RightOutlined
+  LikeOutlined, RightOutlined
 } from "@ant-design/icons";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { Table, Space, Tabs } from "antd";
@@ -13,20 +13,20 @@ import { api } from "auth/FetchInterceptor";
 const { Title, Text } = Typography;
 
 const { TabPane } = Tabs;
+
 const AllContracts = () => {
+  const [contracts, setContract] = useState([]);
+
   const BottomTables = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [key, setKey] = useState('all')
-    const showDrawer = (details) => {
-      setSelectedDetails(details);
-      setDrawerVisible(true);
-    };
-  
+
     const closeDrawer = () => {
       setDrawerVisible(false);
       setSelectedDetails(null);
     };
+
     const data1 = [
       {
         key: "1",
@@ -150,6 +150,7 @@ const AllContracts = () => {
         status: "In Progress",
       },
     ];
+
     const columns1 = [
       {
         title: "Creator",
@@ -163,7 +164,6 @@ const AllContracts = () => {
             </div>
           </Space>
         ),
-      //   sorter: (a, b) => a.name.localeCompare(b.name),
       },
       {
         title: "Stared",
@@ -175,14 +175,12 @@ const AllContracts = () => {
         title: "Deadline",
         dataIndex: "deadline",
         key: "deadline",
-      //   sorter: (a, b) => new Date(a.deadline) - new Date(b.deadline),
       },
       {
         title: "Contract Amount",
         dataIndex: "amount",
         key: "amount",
         align: "left",
-      //   sorter: (a, b) => a.amount.replace("$", "") - b.amount.replace("$", ""),
       },
       {
         title: "Status",
@@ -192,29 +190,20 @@ const AllContracts = () => {
           let statusClass = "status-default";
           if (status === "Completed") statusClass = "status-hired";
           if (status === "In Progress") statusClass = "status-reviewing";
-  
+
           return <span className={`status-badge ${statusClass}`}>{status}</span>;
         },
-        // filters: [
-        //   { text: "In Progress", value: "In Progress" },
-        //   { text: "Completed", value: "Completed" },
-        // ],
-        // onFilter: (value, record) => record.status === value,
-      },
-      {
-        key: "action",
-        render: () => <Link to={`view-contract/${1}`}><RightOutlined style={{ color: "#8c8c8c" }} /></Link>,
-        width: 50,
-      },
+      }
     ];
+
     const onTabChange = (key) => {
-      console.log(key, "key");
-      if (key=='all') {
+      if (key == 'all') {
         getContracts({})
       } else {
-        getContracts({status:key})
+        getContracts({ status: key })
       }
     };
+
     const ContentTable = () => {
       return (
         <Table
@@ -229,6 +218,7 @@ const AllContracts = () => {
         />
       );
     };
+
     const tabItems = [
       {
         key: "all",
@@ -264,6 +254,7 @@ const AllContracts = () => {
         children: <ContentTable />, // Replace with actual content
       }
     ];
+
     return (
       <div className="p-4 campaign-detail-tables">
         {/* <Tabs items={tabItems} /> */}
@@ -356,7 +347,7 @@ const AllContracts = () => {
                   </a>
                 </div>
               </div>
-  
+
               {/* Action Buttons */}
               <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
                 <Button
@@ -396,21 +387,27 @@ const AllContracts = () => {
       </div>
     );
   };
-  const getContracts = async (payload)=>{
-    const resp = await api.get(`Contracts`,payload);
-    if (resp.statusCode==200) {
-      console.log(resp)
+
+  const getContracts = async () => {
+    const user = JSON.parse(localStorage.getItem("main_user"));
+    let payload = {}
+    if (user.role == "Brand") {
+      payload = { created_by_id: user._id }
     } else {
-      console.log(resp.error);
-      message.error(resp.message)
+      payload = { user_: user._id };
     }
+
+    const resp = await api.get(`Contracts`, payload);
+    setContract(resp.data.data);
   }
-useEffect(() => {
-  getContracts({})
-}, [])
+
+  useEffect(() => {
+    getContracts()
+  }, [])
+
   return (
     <>
-    <Title level={2}>All Contracts</Title>
+      <Title level={2}>All Contracts</Title>
       <BottomTables />
     </>
   );
