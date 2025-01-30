@@ -154,7 +154,6 @@ const ChatInterface = () => {
   );
 };
 
-
 const ViewProject = () => {
   const [tabKey, setTabKey] = useState(1);
   const [contractInfo, setContractInfo] = useState({});
@@ -162,8 +161,9 @@ const ViewProject = () => {
 
   const getContractDetails = async (payload) => {
     const CampaignResp = await api.getSingle(`Contracts`, payload);
+
     if (CampaignResp) {
-      setContractInfo(CampaignResp);
+      setContractInfo(CampaignResp.data);
     }
   }
 
@@ -172,14 +172,14 @@ const ViewProject = () => {
       getContractDetails({
         _id: id
       })
-    } else {
-      history.goBack()
     }
   }, [id])
 
   return (
     <div className="project-container">
-      <Title level={2}>North Face Jacket Campaign</Title>
+      <Title level={2}>
+        {contractInfo?.campaign?.campaign_name}
+      </Title>
       <Card className="header-card">
         <Row align="middle" justify="space-between">
           <Col>
@@ -194,7 +194,7 @@ const ViewProject = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <Avatar src={'https://i.pravatar.cc/100'} size={50} />
+                <Avatar src={contractInfo?.user?.profile_picture} size={50} />
               </div>
               <div style={{ width: "77%" }}>
                 <div
@@ -207,13 +207,15 @@ const ViewProject = () => {
                   </span>
                 </div>
                 <div>
-                  <Text className="name mt-2 mb-2">Colten Aguilar</Text>
+                  <Text className="name mt-2 mb-2">
+                    {contractInfo?.user?.name}
+                  </Text>
                 </div>
               </div>
             </div>
           </Col>
           <Col>
-            <Text className="price">$300</Text>
+            <Text className="price">$ {contractInfo?.amount}</Text>
           </Col>
         </Row>
         <div className="nav-tabs">

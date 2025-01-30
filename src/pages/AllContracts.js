@@ -21,166 +21,79 @@ const AllContracts = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [key, setKey] = useState('all')
+    const user = JSON.parse(localStorage.getItem("main_user"));
 
     const closeDrawer = () => {
       setDrawerVisible(false);
       setSelectedDetails(null);
     };
 
-    const data1 = [
-      {
-        key: "1",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "2",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "3",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "Completed",
-      },
-      {
-        key: "4",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "5",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "6",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "7",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "8",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "9",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "Completed",
-      },
-      {
-        key: "10",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-      {
-        key: "11",
-        name: "Camila Cabelo",
-        campaign: "North Face Campaign",
-        avatar: "https://via.placeholder.com/40",
-        stared: false,
-        deadline: "03 Dec 2022",
-        contractDate: "30 Mar 2022",
-        amount: "$300",
-        status: "In Progress",
-      },
-    ];
-
     const columns1 = [
-      {
+      user.role == 'Brand' ? {
         title: "Creator",
-        key: "creator",
-        render: (record) => (
-          <Space>
-            <Avatar src={"https://i.pravatar.cc/101"} />
-            <div>
-              <div style={{ fontWeight: 500 }}>{record.name}</div>
-              <div style={{ color: "#8c8c8c" }}>{record.campaign}</div>
-            </div>
-          </Space>
-        ),
+        key: "user",
+        dataIndex: "user",
+        render: (user) => {
+          console.log(user);
+
+          return (
+            <Space>
+              <Avatar src={user.profile_picture} />
+              <div>
+                <div style={{ fontWeight: 500 }}>{user.name}</div>
+              </div>
+            </Space>
+          )
+        },
+      } : {
+        title: "Brand",
+        key: "campaign",
+        dataIndex: "campaign",
+        render: (campaign) => {
+          console.log(campaign);
+
+          return (
+            <Space>
+              <Avatar src={campaign.product_brand_logo} />
+              <div>
+                <div style={{ fontWeight: 500 }}>{campaign.campaign_name}</div>
+              </div>
+            </Space>
+          )
+        },
       },
       {
         title: "Stared",
-        dataIndex: "contractDate",
-        key: "contractDate",
+        dataIndex: "start_date",
+        key: "start_date",
         align: "center",
+        render: (start_date) => (
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Text>{new Date(start_date).toDateString()}</Text>
+          </div>
+        ),
       },
       {
         title: "Deadline",
-        dataIndex: "deadline",
-        key: "deadline",
+        dataIndex: "end_date",
+        key: "end_date",
+        align: "center",
+        render: (end_date) => (
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Text>{new Date(end_date).toDateString()}</Text>
+          </div>
+        ),
       },
       {
         title: "Contract Amount",
         dataIndex: "amount",
         key: "amount",
         align: "left",
+        render: (amount) => (
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Text>$ {amount}</Text>
+          </div>
+        ),
       },
       {
         title: "Status",
@@ -189,7 +102,7 @@ const AllContracts = () => {
         render: (status) => {
           let statusClass = "status-default";
           if (status === "Completed") statusClass = "status-hired";
-          if (status === "In Progress") statusClass = "status-reviewing";
+          if (status === "In Progress") statusClass = "status-shortlisted";
 
           return <span className={`status-badge ${statusClass}`}>{status}</span>;
         },
@@ -197,24 +110,23 @@ const AllContracts = () => {
     ];
 
     const onTabChange = (key) => {
-      if (key == 'all') {
-        getContracts({})
-      } else {
-        getContracts({ status: key })
-      }
+      setKey(key)
     };
 
     const ContentTable = () => {
       return (
         <Table
           columns={columns1}
-          dataSource={data1}
-          pagination={{
-            total: 11,
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          }}
+          dataSource={contracts.filter(contract => {
+            if (key === "all") return true;
+            return contract.status === key
+          })}
+        // pagination={{
+        //   total: 11,
+        //   pageSize: 10,
+        //   showSizeChanger: true,
+        //   showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+        // }}
         />
       );
     };
@@ -224,7 +136,9 @@ const AllContracts = () => {
         key: "all",
         label: (
           <>
-            All<span className="ml-2 status-badge status-default">80</span>
+            All<span className="ml-2 status-badge status-default">
+              {contracts.length}
+            </span>
           </>
         ),
         children: <ContentTable />, // Replace with actual content
@@ -234,8 +148,8 @@ const AllContracts = () => {
         label: (
           <>
             In Progress
-            <span className="ml-2 text-green-600 status-badge status-reviewing">
-              18
+            <span className="ml-2 text-green-600 status-badge status-shortlisted">
+              {contracts.filter(contract => contract.status === "In Progress").length}
             </span>
           </>
         ),
@@ -247,7 +161,7 @@ const AllContracts = () => {
           <>
             Completed
             <span className="ml-2 text-blue-600 status-badge status-hired">
-              22
+              {contracts.filter(contract => contract.status === "Completed").length}
             </span>
           </>
         ),
@@ -392,9 +306,9 @@ const AllContracts = () => {
     const user = JSON.parse(localStorage.getItem("main_user"));
     let payload = {}
     if (user.role == "Brand") {
-      payload = { created_by_id: user._id }
+      payload = { tabFilter: { created_by_id: user._id } }
     } else {
-      payload = { user_: user._id };
+      payload = { tabFilter: { user_id: user._id } };
     }
 
     const resp = await api.get(`Contracts`, payload);

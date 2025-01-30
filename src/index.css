@@ -107,7 +107,7 @@
   color: #fd5c02;
 }
 ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
-  background-image: linear-gradient(0deg, #fd5c0224, #fd5c020f);
+  /* background-image: linear-gradient(0deg, #fd5c0224, #fd5c020f); */
 }
 .ant-steps-item {
   color: #999;

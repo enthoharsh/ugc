@@ -84,150 +84,6 @@ const CampaignDetail = () => {
       setSelectedDetails(null);
     };
 
-    const data = [
-      {
-        key: "1",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Reviewing",
-        isLike: true,
-      },
-      {
-        key: "2",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "6",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "7",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "8",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "9",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "10",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "11",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Applied",
-        isLike: false,
-      },
-      {
-        key: "12",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Rejected",
-        isLike: false,
-      },
-      {
-        key: "13",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "14",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "3",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "4",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      {
-        key: "5",
-        name: "Colten Aguilar",
-        location: "Indonesia",
-        quote: "$300",
-        details: "Lorem project cover letter....",
-        criteria: ["English", "Asian", "Pets", "Mandarin", "Pool"],
-        status: "Hired",
-        isLike: false,
-      },
-      // Add more data as needed
-    ];
-
     const columns = [
       {
         title: "Name",
@@ -268,7 +124,7 @@ const CampaignDetail = () => {
         width: "35%",
         render: (criterias) => (
           <div className="criteria-container">
-            {criterias.map((criteria) => (
+            {(criterias || []).map((criteria) => (
               <Tag key={criteria} className="criteria-tag">
                 {criteria}
               </Tag>
@@ -297,22 +153,22 @@ const CampaignDetail = () => {
         width: "17%",
         render: (obj) => (
           <Space size="middle" className="action-container">
-            <>
+            {obj.status != 'Hired' && <>
               {!obj.isLike ? (
                 <LikeOutlined onClick={() => applicationShortlist(obj._id)} />
               ) : (
                 <LikeFilled style={{ color: "#16a34a" }} />
               )}
-            </>
+            </>}
             <>
               <EyeFilled
                 onClick={() => showDrawer(obj)}
                 style={{ cursor: "pointer" }}
               />
             </>
-            <>
+            {obj.status != 'Hired' && <>
               <CloseOutlined onClick={() => applicationReject(obj._id)} style={{ color: "red" }} />
-            </>
+            </>}
           </Space>
         ),
       },
@@ -334,7 +190,10 @@ const CampaignDetail = () => {
                 end_date: new Date(selectedDetails.deadline_date),
                 amount: selectedDetails.amount,
                 status: 'In Progress',
-                timeline: [{ type: "contract_started", data: { text: "You started the contract", date: new Date(), amount: selectedDetails.amount } }],
+                timeline: [
+                  { type: "contract_started", data: { text: "You started the contract", date: new Date(), amount: selectedDetails.amount } }
+
+                ],
               });
 
               message.success(resp.message)
@@ -387,12 +246,12 @@ const CampaignDetail = () => {
             if (activeTabKey === 'all') return true;
             return item.status.toLowerCase() === activeTabKey;
           })}
-          pagination={{
-            total: 11,
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          }}
+        // pagination={{
+        //   total: 11,
+        //   pageSize: 10,
+        //   showSizeChanger: true,
+        //   showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+        // }}
         />
       );
     };
@@ -541,7 +400,7 @@ const CampaignDetail = () => {
               </div> */}
 
               {/* Action Buttons */}
-              <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
+              {selectedDetails.status != 'Hired' && <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
                 <Button
                   type="primary"
                   style={{ background: "#f97316", border: "none" }}
@@ -563,7 +422,7 @@ const CampaignDetail = () => {
                 >
                   Reject
                 </Button>
-              </div>
+              </div>}
             </div>
           )}
         </Drawer>
@@ -587,15 +446,12 @@ const CampaignDetail = () => {
     const CampaignResp = await api.getSingle(`Campaigns`, payload);
 
     const ContractsResponse = await api.get(`Contracts`, {
-      campaign_id: id
+      tabFilter: { campaign_id: id }
     });
 
     const ApplicationsResponse = await api.get(`Applications`, {
-      campaign_id: id
+      tabFilter: { campaign_id: id }
     });
-
-    console.log(CampaignResp, ContractsResponse, ApplicationsResponse);
-
 
     setCampaignInfo(CampaignResp.data)
     setContracts(ContractsResponse.data.data)
