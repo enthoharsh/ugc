@@ -191,8 +191,15 @@ const CampaignDetail = () => {
                 amount: selectedDetails.amount,
                 status: 'In Progress',
                 timeline: [
-                  { type: "contract_started", data: { text: "You started the contract", date: new Date(), amount: selectedDetails.amount } }
-
+                  { 
+                    type: "contract_started", 
+                    data: { 
+                      brand_text: "You started the contract", 
+                      creator_text: "Brand started the contract",
+                      date: new Date(), 
+                      amount: selectedDetails.amount 
+                    } 
+                  }
                 ],
               });
 
