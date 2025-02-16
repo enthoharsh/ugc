@@ -174,6 +174,16 @@ const ViewProject = () => {
       })
     }
   }, [id])
+  const cardStyle = {
+    border: '1px dashed #d3d3d3',
+    borderRadius: '8px',
+    padding: '16px',
+    maxWidth: '250px',
+  };
+
+  const sectionStyle = {
+    marginBottom: '12px',
+  };
 
   return (
     <div className="project-container">
@@ -227,7 +237,9 @@ const ViewProject = () => {
 
       {tabKey == 1 && <Row gutter={24} className="content-section">
         <Col span={16}>
-          <Card>
+          <Card >
+            <div style={{    display: 'flex',    justifyContent: 'space-between'}}>
+            <div>
             <Title level={4} className='mb-4'>Project Timeline</Title>
             <Timeline>
               <Timeline.Item color="orange">
@@ -261,6 +273,25 @@ const ViewProject = () => {
                 </div>
               </Timeline.Item>
             </Timeline>
+            </div>
+            <div>
+            <Title level={4} className='mb-4'></Title>
+            <div style={cardStyle}>
+      <div style={sectionStyle}>
+        <Text type="secondary">Contract Started</Text><br/>
+        <Text strong>26 Jul 2022 5:00 AM</Text>
+      </div>
+      <div style={sectionStyle}>
+        <Text type="secondary">Payment Status</Text><br/>
+        <Text strong>Payment Held In Escrow</Text>
+      </div>
+      <div style={sectionStyle}>
+        <Text type="secondary">Project Status</Text><br/>
+        <Text strong>Awaiting Brand Feedback</Text>
+      </div>
+    </div>
+            </div>
+            </div>
           </Card>
         </Col>
 

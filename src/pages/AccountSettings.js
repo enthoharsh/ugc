@@ -21,7 +21,7 @@ const { TabPane } = Tabs;
 
 const AccountSettings = () => {
   const [form] = Form.useForm();
-
+  const [ActKey, setActKey] = useState('About')
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState();
   const [imageUrl, setImageUrl] = useState();
@@ -172,6 +172,20 @@ const AccountSettings = () => {
               </div>
               <div style={{ width: "48%" }}>
                 <Form.Item
+                  label="Last Name"
+                  name="last_name"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your last name!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Your Last name" />
+                </Form.Item>
+              </div>
+              <div style={{ width: "48%" }}>
+                <Form.Item
                   label="Contact Email"
                   name="email"
                   rules={[
@@ -194,6 +208,17 @@ const AccountSettings = () => {
                   ]}
                 >
                   <Input placeholder="Your phone number" />
+                </Form.Item>
+              </div>
+              <div style={{ width: "48%" }}>
+                <Form.Item
+                  label="Change Password"
+                  name="change_password"
+                  rules={[
+                    { required: false,  },
+                  ]}
+                >
+                  <Input.Password placeholder="Enter password" />
                 </Form.Item>
               </div>
               <div style={{ width: "48%" }}>
@@ -466,7 +491,7 @@ const AccountSettings = () => {
 
   const tabItems = [
     {
-      key: "1",
+      key: "About",
       label: (
         <>
           <span className="mr-2">
@@ -478,7 +503,7 @@ const AccountSettings = () => {
       children: <AccountProfile />, // Replace with actual content
     },
     {
-      key: "2",
+      key: "Billing",
       label: (
         <>
           <span className="mr-2">
@@ -490,7 +515,7 @@ const AccountSettings = () => {
       children: <Billing />, // Replace with actual content
     },
     {
-      key: "3",
+      key: "Payment History",
       label: (
         <>
           <span className="mr-2">
@@ -508,9 +533,12 @@ const AccountSettings = () => {
       <Title level={3} className="campaign-title">
         Account Settings
       </Title>
+      <Title level={5} style={{fontWeight:'400',fontSize:'16px',margin:'5px 0'}}>
+        Account &#183; <span style={{color:'#fe5c02'}} >{ActKey}</span>
+      </Title>
       <Tabs
-        defaultActiveKey="1"
-        onChange={(key) => console.log("Selected tab:", key)}
+        defaultActiveKey="About"
+        onChange={(key) => setActKey(key)}
       >
         {tabItems.map((item, i) => {
           return (

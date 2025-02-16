@@ -95,7 +95,7 @@ const VideoDurationSelector = ({ selections, setSelections }) => {
                     +
                   </button>
                 </div>
-                <div className="price">${price}</div>
+                <div className="price">{price}</div>
               </div>
             </div>
           )
@@ -325,7 +325,7 @@ const Campaigns = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="order-campaign" style={{ padding: "20px" }}>
       <Title level={3}>New Campaign</Title>
       <Text type="secondary">Campaigns - Order Form</Text>
 
@@ -336,7 +336,7 @@ const Campaigns = () => {
       >
         <Step title="Project Details" />
         <Step title="Creator Criteria" />
-        <Step title="Project Brief" />
+        <Step title="Publish Campaign" />
       </Steps>
 
       {currentStep === 0 && (
@@ -376,7 +376,7 @@ const Campaigns = () => {
             <h3>What platform(s) is it for?</h3>
             <Checkbox.Group
               className="orangeCheckBox"
-              options={["Instagram", "TikTok", "Facebook", "Youtube"]}
+              options={["Instagram", "TikTok", "Facebook", "Youtube","Amazon","Shopify"]}
               value={platforms}
               onChange={handlePlatformChange}
             />
@@ -389,6 +389,26 @@ const Campaigns = () => {
               setSelectedOption={setAspectRatio}
             />
           </div>
+          <div className="steps-actions">
+        <Button
+          disabled={currentStep === 0}
+          className="back"
+          onClick={() => handleStepChange("prev")}
+        >
+          Back
+        </Button>
+        {currentStep != 2 && (
+          <Button
+            disabled={currentStep === 2}
+            onClick={() => handleStepChange("next")}
+          >
+            Next Step
+          </Button>
+        )}
+        {currentStep == 2 && (
+          <Button onClick={() => createCampaign()}>Create Campaign</Button>
+        )}
+      </div>
         </div>
       )}
       {currentStep === 1 && (
@@ -514,6 +534,26 @@ const Campaigns = () => {
               placeholder="Specify and describe your preference of creators"
             />
           </div>
+          <div className="steps-actions">
+        <Button
+          disabled={currentStep === 0}
+          className="back"
+          onClick={() => handleStepChange("prev")}
+        >
+          Back
+        </Button>
+        {currentStep != 2 && (
+          <Button
+            disabled={currentStep === 2}
+            onClick={() => handleStepChange("next")}
+          >
+            Next Step
+          </Button>
+        )}
+        {currentStep == 2 && (
+          <Button onClick={() => createCampaign()}>Create Campaign</Button>
+        )}
+      </div>
         </div>
       )}
       {currentStep === 2 && (
@@ -700,10 +740,30 @@ const Campaigns = () => {
                 <Button icon={<UploadOutlined />}>Upload files</Button>
               </Upload>
             </div>
+          <div className="steps-actions">
+        <Button
+          disabled={currentStep === 0}
+          className="back"
+          onClick={() => handleStepChange("prev")}
+        >
+          Back
+        </Button>
+        {currentStep != 2 && (
+          <Button
+            disabled={currentStep === 2}
+            onClick={() => handleStepChange("next")}
+          >
+            Next Step
+          </Button>
+        )}
+        {currentStep == 2 && (
+          <Button onClick={() => createCampaign()}>Create Campaign</Button>
+        )}
+      </div>
           </div>
         </div>
       )}
-      <div className="steps-actions">
+      {/* <div className="steps-actions">
         <Button
           disabled={currentStep === 0}
           onClick={() => handleStepChange("prev")}
@@ -715,13 +775,13 @@ const Campaigns = () => {
             disabled={currentStep === 2}
             onClick={() => handleStepChange("next")}
           >
-            Next
+            Next Step
           </Button>
         )}
         {currentStep == 2 && (
           <Button onClick={() => createCampaign()}>Create Campaign</Button>
         )}
-      </div>
+      </div> */}
       {/* Additional step content can be added for other steps here */}
     </div>
   );

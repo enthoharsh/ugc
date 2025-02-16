@@ -1,11 +1,12 @@
 // AllCampaigns.js
 import React, { useEffect } from 'react';
-import { Input, Card, Button, Space, Select, Pagination, Dropdown } from 'antd';
-import { SearchOutlined, MoreOutlined, TeamOutlined } from '@ant-design/icons';
+import { Input, Card, Button, Space, Select, Pagination, Dropdown, Menu } from 'antd';
+import { SearchOutlined, MoreOutlined,EyeOutlined, TeamOutlined } from '@ant-design/icons';
 import { HangerIcon, ImageIcon, PlatformIcon, UserIcon } from 'components/icons';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
 import { api } from 'auth/FetchInterceptor';
 import DropdownButton from 'antd/lib/dropdown/dropdown-button';
+import EllipsisDropdown from 'components/shared-components/EllipsisDropdown';
 
 const { Option } = Select;
 
@@ -80,7 +81,7 @@ const AllCampaigns = () => {
 
       <div className="allCamp-campaign-grid">
         {campaigns.map((campaign, index) => (
-          <Link to={`campaign-detail/${campaign._id}`} key={index}>
+          // <Link to={`campaign-detail/${campaign._id}`} key={index}>
           <Card key={index} className="allCamp-campaign-card">
             <div style={{padding:'20px'}}>
 
@@ -88,7 +89,16 @@ const AllCampaigns = () => {
               <div className="allCamp-logo-container">
                 <img src={campaign.img} alt="North Face Logo" className="allCamp-company-logo" />
               </div>
-              <Button type="text" icon={<MoreOutlined />} className="allCamp-more-btn" />
+              <EllipsisDropdown menu={
+			<Menu>
+				<Menu.Item>
+        <Link to={`campaign-detail/${campaign._id}`} key={index}><EyeOutlined/> View Campaign</Link>
+				</Menu.Item>
+				<Menu.Item>
+        <Link to={`campaign-detail/campaign-info/${campaign._id}`} key={index}><EyeOutlined/> Campaign Info</Link>
+				</Menu.Item>
+			</Menu>}/>
+              {/*  <Button type="text" icon={<MoreOutlined />} className="allCamp-more-btn" /> */}
             </div>
             <h3>{campaign.title}</h3>
             <p className="allCamp-date">Posted date: {new Date(campaign.createdAt).toDateString()}</p>
@@ -119,7 +129,7 @@ const AllCampaigns = () => {
               </Space>
             </div>
           </Card>
-          </Link>
+          // </Link>
         ))}
       </div>
 

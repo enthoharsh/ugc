@@ -99,6 +99,7 @@ const CampaignDetail = () => {
             </Avatar>
             <div className="name-details">
               <div className="name-text">{record.created_by.name}</div>
+              {/* <div className="name-text">{record.created_by.country}</div> */}
             </div>
           </div>
         ),
@@ -274,12 +275,11 @@ const CampaignDetail = () => {
         children: <ContentTable />, // Replace with actual content
       },
       {
-        key: "hired",
+        key: "applied",
         label: (
           <>
-            Hired
-            <span className="ml-2 text-green-600 status-badge status-hired">
-              {applications.filter((item) => item.status === "Hired").length}
+            Applied<span className="ml-2 status-badge status-applied">
+              {applications.filter((item) => item.status === "Applied").length}
             </span>
           </>
         ),
@@ -298,11 +298,12 @@ const CampaignDetail = () => {
         children: <ContentTable />, // Replace with actual content
       },
       {
-        key: "applied",
+        key: "hired",
         label: (
           <>
-            Applied<span className="ml-2 status-badge status-applied">
-              {applications.filter((item) => item.status === "Applied").length}
+            Hired
+            <span className="ml-2 text-green-600 status-badge status-hired">
+              {applications.filter((item) => item.status === "Hired").length}
             </span>
           </>
         ),
@@ -489,7 +490,7 @@ const CampaignDetail = () => {
           </Link>
         </div>
         <Text className="breadcrumb">
-          Campaigns • All Campaigns • {campaignInfo.campaign_name}
+          Campaigns<span className="mx-2">•</span>  All Campaigns<span className="mx-2">•</span>  <span className="prm-color">{campaignInfo.campaign_name}</span>
         </Text>
         <Row gutter={[24, 24]} className="project-grid">
           {contracts.map((contract, index) => (

@@ -2,7 +2,7 @@ import {
   BellOutlined,
   DashboardOutlined, IdcardOutlined, MessageOutlined, ShopOutlined, UserOutlined
 } from '@ant-design/icons';
-import { AllContractIcon, Campaign } from 'components/icons';
+import { UserPortfolio, Campaign, DashboardIcon, ProjectMarketIcon, ContractIcon, SettingIcon } from 'components/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
 let dashBoardNavTree = [
@@ -10,13 +10,13 @@ let dashBoardNavTree = [
     key: 'b-home',
     path: `${APP_PREFIX_PATH}/brands/dashboard`,
     title: 'Brand',
-    icon: DashboardOutlined,
+    icon: DashboardIcon,
     breadcrumb: false,
     submenu: [{
       key: 'dashboard',
       path: `${APP_PREFIX_PATH}/brands/dashboard`,
       title: 'Dashboard',
-      icon: DashboardOutlined,
+      icon: DashboardIcon,
       breadcrumb: false,
       submenu: []
     },
@@ -30,7 +30,7 @@ let dashBoardNavTree = [
         {
           key: 'b-all-campaign',
           path: `${APP_PREFIX_PATH}/brands/campaigns/all-campaigns`,
-          title: 'All Campaign',
+          title: 'All Campaigns',
           // icon: Campaign ,
           breadcrumb: false,
           submenu: []
@@ -38,7 +38,7 @@ let dashBoardNavTree = [
         {
           key: 'b-order-form',
           path: `${APP_PREFIX_PATH}/brands/campaigns/order-form`,
-          title: 'Order Form',
+          title: 'New Campaign',
           // icon: Campaign ,
           breadcrumb: false,
           submenu: []
@@ -49,7 +49,7 @@ let dashBoardNavTree = [
       key: 'b-contracts',
       path: `${APP_PREFIX_PATH}/brands/all-contracts`,
       title: 'Contracts',
-      icon: AllContractIcon,
+      icon: ProjectMarketIcon,
       breadcrumb: false,
       submenu: []
     },
@@ -64,8 +64,8 @@ let dashBoardNavTree = [
     {
       key: 'b-account-settings',
       path: `${APP_PREFIX_PATH}/brands/account-settings`,
-      title: 'Account Settings',
-      icon: IdcardOutlined,
+      title: 'Account & Settings',
+      icon: SettingIcon,
       breadcrumb: false,
       submenu: []
     },
@@ -99,13 +99,13 @@ let dashBoardNavTree = [
     key: 'c-home',
     path: `${APP_PREFIX_PATH}/creators/dashboard`,
     title: 'Creators',
-    icon: DashboardOutlined,
+    icon: DashboardIcon,
     breadcrumb: false,
     submenu: [{
       key: 'c-dashboard',
       path: `${APP_PREFIX_PATH}/creators/dashboard`,
       title: 'Dashboard',
-      icon: DashboardOutlined,
+      icon: DashboardIcon,
       breadcrumb: false,
       submenu: []
     },
@@ -113,7 +113,7 @@ let dashBoardNavTree = [
       key: 'c-portfolio',
       path: `${APP_PREFIX_PATH}/creators/portfolio`,
       title: 'Portfolio',
-      icon: UserOutlined,
+      icon: UserPortfolio,
       breadcrumb: false,
       submenu: []
     },
@@ -121,7 +121,7 @@ let dashBoardNavTree = [
       key: 'c-marketplace',
       path: `${APP_PREFIX_PATH}/creators/marketplace`,
       title: 'Project Marketplace',
-      icon: ShopOutlined,
+      icon: ProjectMarketIcon,
       breadcrumb: false,
       submenu: []
     },
@@ -129,7 +129,7 @@ let dashBoardNavTree = [
       key: 'c-all-contracts',
       path: `${APP_PREFIX_PATH}/creators/all-contracts`,
       title: 'Contracts',
-      icon: AllContractIcon,
+      icon: ContractIcon,
       breadcrumb: false,
       submenu: []
     },
@@ -144,8 +144,8 @@ let dashBoardNavTree = [
     {
       key: 'c-account-settings',
       path: `${APP_PREFIX_PATH}/creators/account-settings`,
-      title: 'Account Settings',
-      icon: IdcardOutlined,
+      title: 'Account & Settings',
+      icon: SettingIcon,
       breadcrumb: false,
       submenu: []
     },
