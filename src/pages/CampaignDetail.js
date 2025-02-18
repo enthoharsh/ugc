@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { Card, Drawer, Button, Row, Col, Tag, Typography, Avatar, message, Modal } from "antd";
 import {
   EyeOutlined,
@@ -11,6 +11,7 @@ import {
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { Table, Space, Tabs } from "antd";
 import { api } from "auth/FetchInterceptor";
+import StripePaymentModal from './StripePaymentModal';
 
 const { Title, Text } = Typography;
 
@@ -23,57 +24,60 @@ const CampaignDetail = () => {
   const [applications, setApplications] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [reload, setReload] = useState(Math.random());
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [processingApplication, setProcessingApplication] = useState(null);
+
+  const handlePaymentSuccess = async (paymentIntent) => {
+    try {
+      const resp = await api.update("Applications", { 
+        status: 'Hired',
+        payment_intent_id: paymentIntent.id 
+      }, processingApplication._id);
+  
+      if (resp.success) {
+        await api.save("Contracts", {
+          campaign_id: id,
+          application_id: processingApplication._id,
+          user_id: processingApplication.created_by._id,
+          start_date: new Date(),
+          end_date: new Date(processingApplication.deadline_date),
+          amount: processingApplication.amount,
+          status: 'In Progress',
+          payment_intent_id: paymentIntent.id,
+          timeline: [
+            { 
+              type: "contract_started", 
+              data: { 
+                brand_text: "You started the contract", 
+                creator_text: "Brand started the contract",
+                date: new Date(), 
+                amount: processingApplication.amount 
+              } 
+            }
+          ],
+        });
+  
+        message.success('Payment completed and creator hired successfully!');
+        setReload(Math.random());
+      } else {
+        message.error(resp.message);
+      }
+    } catch (error) {
+      message.error('Failed to create contract. Please try again.');
+    } finally {
+      setPaymentModalVisible(false);
+      setProcessingApplication(null);
+    }
+  };
+
   const { confirm } = Modal;
-
-  const projects = [
-    {
-      id: 1,
-      name: "Colten Aguilar",
-      image: "https://i.pravatar.cc/100",
-      status: "Hired",
-      price: "$300",
-      deadline: "13-04-2025",
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      image: "https://i.pravatar.cc/101",
-      status: "Hired",
-      price: "$500",
-      deadline: "15-05-2025",
-    },
-    {
-      id: 3,
-      name: "Emma Watson",
-      image: "https://i.pravatar.cc/102",
-      status: "Hired",
-      price: "$400",
-      deadline: "20-06-2025",
-    },
-    {
-      id: 4,
-      name: "Alice Johnson",
-      image: "https://i.pravatar.cc/103",
-      status: "Hired",
-      price: "$600",
-      deadline: "25-07-2025",
-    },
-    {
-      id: 5,
-      name: "Colten Aguilar",
-      image: "https://i.pravatar.cc/100",
-      status: "Hired",
-      price: "$300",
-      deadline: "13-04-2025",
-    },
-
-    // Repeat the project data as needed
-  ];
 
   const BottomTables = () => {
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [activeTabKey, setActiveTabKey] = useState("all");
+
+
     const showDrawer = (details) => {
       setSelectedDetails(details);
       setDrawerVisible(true);
@@ -174,52 +178,6 @@ const CampaignDetail = () => {
         ),
       },
     ];
-
-    const applicationHired = async (_id) => {
-      confirm({
-        title: 'Do you want to hire this applicant?',
-        content: 'This action cannot be undone as we will create a contract for this applicant.',
-        onOk() {
-          const hire = async () => {
-            const resp = await api.update("Applications", { status: 'Hired' }, _id);
-            if (resp.success) {
-              await api.save("Contracts", {
-                campaign_id: id,
-                application_id: _id,
-                user_id: selectedDetails.created_by._id,
-                start_date: new Date(),
-                end_date: new Date(selectedDetails.deadline_date),
-                amount: selectedDetails.amount,
-                status: 'In Progress',
-                timeline: [
-                  { 
-                    type: "contract_started", 
-                    data: { 
-                      brand_text: "You started the contract", 
-                      creator_text: "Brand started the contract",
-                      date: new Date(), 
-                      amount: selectedDetails.amount 
-                    } 
-                  }
-                ],
-              });
-
-              message.success(resp.message)
-              setReload(Math.random())
-            } else {
-              console.log(resp.error);
-              message.error(resp.message)
-            }
-
-          };
-
-          hire();
-        },
-        onCancel() {
-          console.log('Cancel');
-        },
-      });
-    }
 
     const applicationReject = async (_id) => {
       const resp = await api.update("Applications", { status: 'Rejected' }, _id);
@@ -412,7 +370,10 @@ const CampaignDetail = () => {
                 <Button
                   type="primary"
                   style={{ background: "#f97316", border: "none" }}
-                  onClick={() => applicationHired(selectedDetails._id)}
+                  onClick={() => {
+                    setProcessingApplication(selectedDetails);
+                    setPaymentModalVisible(true);
+                  }}
                 >
                   Hire
                 </Button>
@@ -541,6 +502,15 @@ const CampaignDetail = () => {
         </Row>
       </div>
       <BottomTables />
+      <StripePaymentModal
+          visible={paymentModalVisible}
+          amount={processingApplication?.amount || 0}
+          onSuccess={handlePaymentSuccess}
+          onCancel={() => {
+            setPaymentModalVisible(false);
+            setProcessingApplication(null);
+          }}
+        />
     </>
   );
 };

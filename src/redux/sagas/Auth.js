@@ -74,15 +74,39 @@ export function* signOut() {
 export function* signUpWithFBEmail() {
   yield takeEvery(SIGNUP, function* ({payload}) {
 		const {email, password} = payload;
+		console.log('email:', email, 'password:', password);
+		
 		try {
-			const user = yield call(FirebaseService.signUpEmailRequest, email, password);
-			if (user.message) {
-				yield put(showAuthMessage(user.message));
+			const firebase_user = yield call(FirebaseService.signUpEmailRequest, email, password);
+			console.log('user:', firebase_user);
+			
+			if (firebase_user.message) {
+				yield put(showAuthMessage(firebase_user.message));
 			} else {
-				localStorage.setItem(AUTH_TOKEN, user.user.uid);
-				yield put(signUpSuccess(user.user.uid));
+				// Then call your own API using call effect
+				const response = yield call(axios.post, `${API_BASE_URL}/api/login`, {
+					email,
+					uid: firebase_user.user.uid
+				});
+				
+				// Extract data from response
+				const { token, user, success, message } = response.data;
+
+				if(!success) {
+					yield put(showAuthMessage(message));
+					return
+				}
+				
+				// Store in localStorage
+				localStorage.setItem(AUTH_TOKEN, token);
+				localStorage.setItem('main_user', JSON.stringify(user));
+				
+				// Dispatch success action
+				yield put(authenticated(token));
 			}
 		} catch (error) {
+			console.log('error:', error);
+			
 			yield put(showAuthMessage(error));
 		}
 	}

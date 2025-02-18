@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Timeline, Card, Row, Col, Typography, Tag, Avatar } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import { Timeline, Card, Row, Col, Typography, Tag, Avatar, message, Modal, Image } from 'antd';
 import { ClockCircleOutlined, DollarOutlined, VideoCameraOutlined, InstagramOutlined } from '@ant-design/icons';
 import { BagIcon, BudgetIcon, CalenderIcon, MonitorPlatformIcon, VideoCamIcon } from 'components/icons';
 import {
@@ -11,7 +11,9 @@ import {
 import {
   SendOutlined,
   PaperClipOutlined,
+  UploadOutlined,
   DownloadOutlined,
+  FileOutlined,
 } from '@ant-design/icons';
 import CampaignInfo from './CampaignInfo';
 import { useParams, useHistory } from 'react-router-dom';
@@ -22,133 +24,189 @@ const { Content, Sider } = Layout;
 const { Text, Title } = Typography;
 const { TextArea } = Input;
 
-const ChatInterface = () => {
-  const messages = [
-    {
-      time: '4:02 PM',
-      content: 'Hey John, I am looking for the best admin template. Could you please help me to find it out? 😃',
-      sender: 'user'
-    },
-    {
-      time: '4:02 PM',
-      content: 'Stack admin is the responsive bootstrap 4 admin template.',
-      sender: 'other'
-    },
-    {
-      time: '4:02 PM',
-      content: 'Looks clean and fresh UI. 😃',
-      sender: 'user'
-    }
-  ];
+const ChatInterface = ({ contractInfo }) => {
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const chatContainerRef = useRef(null);
+  const user = JSON.parse(localStorage.getItem("main_user"));
+  const isBrand = user.role === 'Brand';
 
-  const timelineItems = [
-    {
-      title: 'You started the contract',
-      date: '2024-02-21',
-      amount: '$300'
-    },
-    {
-      title: 'You shipped products',
-      date: '2024-02-22',
-      trackingId: '1232132lasdsda213'
-    },
-    {
-      title: 'Creator received products',
-      date: '2024-02-25'
-    },
-    {
-      title: 'Content delivered by creator',
-      date: '2024-02-27',
-      hasAttachment: true
-    },
-    {
-      title: 'Revision requested by brand',
-      date: '2024-02-27',
-      hasNotes: true,
-      notes: 'Please change the cta to this that lorem ipsum. Please change the cta to this that lorem ipsum. Please change the cta to this that lorem ipsum'
+  // Load chat messages
+  const loadMessages = async () => {
+    try {
+      const response = await api.get('ChatMessages', {
+        tabFilter: { contract_id: contractInfo._id }
+      });
+      setMessages(response.data.data);
+      scrollToBottom();
+    } catch (error) {
+      message.error('Failed to load messages');
     }
-  ];
+  };
+
+  useEffect(() => {
+    if (contractInfo._id) {
+      loadMessages();
+      // Poll for new messages every 10 seconds
+      const interval = setInterval(loadMessages, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [contractInfo._id]);
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
+  const handleUpload = async (info) => {
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(info.file);
+    reader.onload = () => {
+      api.uploadFile("Users", {
+        file: reader.result,
+        extension: info.file.name.split(".").pop(),
+      }).then((res) => {
+        if (res.success) {
+          setUploadedFiles([...uploadedFiles, {
+            url: res.url,
+            name: info.file.name,
+            type: info.file.type
+          }]);
+          setLoading(false);
+          info.onSuccess();
+        }
+      });
+    };
+  };
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() && uploadedFiles.length === 0) return;
+
+    try {
+      const messageData = {
+        contract_id: contractInfo._id,
+        user_id: user._id,
+        message_type: uploadedFiles.length > 0 ? 'attachment' : 'text',
+        message: newMessage.trim(),
+        message_data: {
+          files: uploadedFiles,
+          timestamp: new Date().toISOString()
+        },
+        read_by: [user._id]
+      };
+
+      await api.save('ChatMessages', messageData);
+      setNewMessage('');
+      setUploadedFiles([]);
+      await loadMessages();
+    } catch (error) {
+      message.error('Failed to send message');
+    }
+  };
+
+  const renderMessage = (msg) => {
+    const isOwnMessage = msg.user_id === user._id;
+    const messageTime = new Date(msg.createdAt).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+
+    return (
+      <div 
+        key={msg._id} 
+        className={`message-wrapper ${isOwnMessage ? 'user-message' : ''}`}
+      >
+        <Avatar 
+          size="small" 
+          src={msg.user?.profile_picture || "https://via.placeholder.com/32"} 
+        />
+        <div className="message-content">
+          <div className="message-bubble">
+            {msg.message_type === 'attachment' && msg.message_data?.files?.map((file, index) => (
+              <div key={index} className="attachment-preview">
+                {file.type?.startsWith('image/') ? (
+                  <img src={file.url} alt="attachment" style={{ maxWidth: '200px' }} />
+                ) : (
+                  <Button 
+                    icon={<FileOutlined />} 
+                    onClick={() => window.open(file.url)}
+                  >
+                    {file.name}
+                  </Button>
+                )}
+              </div>
+            ))}
+            {msg.message}
+          </div>
+          <Text type="secondary" className="message-time">{messageTime}</Text>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTimeline = () => (
+    <Card title="PROJECT TIMELINE" className="timeline-card">
+      <ProjectTimeline 
+        contract={contractInfo}
+        onTimelineUpdate={() => {
+          // Trigger parent component to refresh contract info
+          if (contractInfo.onRefresh) {
+            contractInfo.onRefresh();
+          }
+        }}
+      />
+    </Card>
+  );
 
   return (
     <Layout className="chat-layout">
       <Content style={{ padding: '24px', background: '#fff' }}>
-        <div className="chat-container">
-          {messages.map((msg, index) => (
-            <div key={index} className={`message-wrapper ${msg.sender === 'user' ? 'user-message' : ''}`}>
-              <Avatar size="small" src="https://via.placeholder.com/32" />
-              <div className="message-content">
-                <div className="message-bubble">
-                  {msg.content}
-                </div>
-                <Text type="secondary" className="message-time">{msg.time}</Text>
-              </div>
-            </div>
-          ))}
+        <div className="chat-container" ref={chatContainerRef}>
+          {messages.map(renderMessage)}
         </div>
         <div className="chat-input">
           <TextArea
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message"
             autoSize={{ minRows: 1, maxRows: 4 }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
           />
           <div className="input-actions">
-            <Upload>
-              <Button type="text" icon={<PaperClipOutlined />} />
+            <Upload
+              customRequest={handleUpload}
+              showUploadList={false}
+              multiple={true}
+            >
+              <Button 
+                type="text" 
+                icon={<PaperClipOutlined />} 
+                loading={loading}
+              />
             </Upload>
-            <Button icon={<SendOutlined />} />
+            <Button 
+              icon={<SendOutlined />} 
+              onClick={sendMessage}
+              disabled={loading}
+            />
           </div>
         </div>
       </Content>
       <Sider width={400} theme="light" style={{ padding: '24px' }}>
-        <Card title="PROJECT TIMELINE" className="timeline-card">
-          <Timeline>
-            {timelineItems.map((item, index) => (
-              <Timeline.Item
-                key={index}
-                dot={item.hasAttachment ? <PaperClipOutlined /> : <ClockCircleOutlined />}
-              >
-                <div className="timeline-item">
-                  <div className="timeline-header">
-                    <Text strong>{item.title}</Text>
-                    <Text type="secondary">{item.date}</Text>
-                  </div>
-
-                  {item.amount && (
-                    <Text strong className="timeline-amount">{item.amount}</Text>
-                  )}
-
-                  {item.trackingId && (
-                    <div className="timeline-tracking">
-                      <Text>Tracking ID</Text>
-                      <Text code>{item.trackingId}</Text>
-                    </div>
-                  )}
-
-                  {item.hasAttachment && (
-                    <div className="timeline-attachment">
-                      <Text>1 attachment</Text>
-                      <Button type="link" icon={<DownloadOutlined />}>
-                        Download
-                      </Button>
-                    </div>
-                  )}
-
-                  {item.hasNotes && (
-                    <div className="timeline-notes">
-                      <Text type="secondary">{item.notes}</Text>
-                    </div>
-                  )}
-
-                  {item.hasAttachment && (
-                    <div className="timeline-actions">
-                      <Button className='secondary-color-btn'>Request Revision</Button>
-                      <Button className='primary-solid-button'>Mark Complete</Button>
-                    </div>
-                  )}
-                </div>
-              </Timeline.Item>
-            ))}
-          </Timeline>
-        </Card>
+        {renderTimeline()}
       </Sider>
     </Layout>
   );
@@ -241,38 +299,15 @@ const ViewProject = () => {
             <div style={{    display: 'flex',    justifyContent: 'space-between'}}>
             <div>
             <Title level={4} className='mb-4'>Project Timeline</Title>
-            <Timeline>
-              <Timeline.Item color="orange">
-                <div className="timeline-item">
-                  <Text strong>Project completed</Text>
-                  <Text type="secondary">2 hours ago</Text>
-                </div>
-              </Timeline.Item>
-              <Timeline.Item>
-                <div className="timeline-item">
-                  <Text strong>Revision requested</Text>
-                  <Text type="secondary">6 hours ago</Text>
-                </div>
-              </Timeline.Item>
-              <Timeline.Item>
-                <div className="timeline-item">
-                  <Text strong>Creator submitted content</Text>
-                  <Text type="secondary">25 Jul 2020</Text>
-                </div>
-              </Timeline.Item>
-              <Timeline.Item>
-                <div className="timeline-item">
-                  <Text strong>Product Shipped</Text>
-                  <Text type="secondary">22 Nov 2020</Text>
-                </div>
-              </Timeline.Item>
-              <Timeline.Item>
-                <div className="timeline-item">
-                  <Text strong>Contract started</Text>
-                  <Text type="secondary">24 Sep 2020</Text>
-                </div>
-              </Timeline.Item>
-            </Timeline>
+
+            {contractInfo.timeline ? <ProjectTimeline 
+              contract={contractInfo}
+              onTimelineUpdate={() => {
+                getContractDetails({
+                  _id: id
+                });
+              }}
+            /> : <div>No timeline data available</div>}
             </div>
             <div>
             <Title level={4} className='mb-4'></Title>
@@ -343,12 +378,266 @@ const ViewProject = () => {
           </Card>
         </Col>
       </Row>}
-      {
-        tabKey == 2 && <ChatInterface />
-      }
+
+      {tabKey == 2 && contractInfo?.timeline?.length > 0 && <ChatInterface 
+            contractInfo={contractInfo}
+            onTimelineUpdate={() => {
+              getContractDetails({
+                _id: id
+              });
+            }}
+          />}
+
       {tabKey == 3 && <CampaignInfo id={contractInfo.campaign_id} />}
     </div>
   );
 };
 
 export default ViewProject;
+
+
+const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("main_user"));
+  const isBrand = user.role === 'Brand';
+
+  const handleUpload = async (info) => {
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(info.file);
+    reader.onload = () => {
+      api.uploadFile("Users", {
+        file: reader.result,
+        extension: info.file.name.split(".").pop(),
+      }).then((res) => {
+        if (res.success) {
+          setUploadedFiles([...uploadedFiles, res.url]);
+          setLoading(false);
+          info.onSuccess();
+        }
+      });
+    };
+  };
+
+  const updateTimeline = async (newTimelineItem) => {
+    try {
+      // Get latest contract data
+      const latestContract = await api.getSingle('Contracts', { _id: contract._id });
+      
+      // Append new timeline item
+      const updatedTimeline = [...latestContract.data.timeline, newTimelineItem];
+      
+      // Update contract
+      await api.update('Contracts', {
+        _id: contract._id,
+        timeline: updatedTimeline
+      });
+
+      onTimelineUpdate();
+      message.success('Timeline updated successfully');
+    } catch (error) {
+      message.error('Failed to update timeline');
+    }
+  };
+
+  const handleProductReceived = async () => {
+    const timelineItem = {
+      type: 'product_received',
+      data: {
+        brand_text: 'Creator received products',
+        creator_text: 'You received products',
+        date: new Date()
+      }
+    };
+    await updateTimeline(timelineItem);
+  };
+
+  const handleContentSubmit = async () => {
+    const timelineItem = {
+      type: 'content_delivered',
+      data: {
+        brand_text: 'Content delivered by creator',
+        creator_text: 'You delivered content',
+        date: new Date(),
+        files: uploadedFiles
+      }
+    };
+    await updateTimeline(timelineItem);
+    setIsModalVisible(false);
+    setUploadedFiles([]);
+  };
+
+  const handleRevisionRequest = async () => {
+    const timelineItem = {
+      type: 'revision_requested',
+      data: {
+        brand_text: 'Revision requested by you',
+        creator_text: `Revision requested by ${contract.created_by.name}`,
+        date: new Date(),
+        feedback
+      }
+    };
+    await updateTimeline(timelineItem);
+    setIsModalVisible(false);
+    setFeedback('');
+  };
+
+  const handleMarkComplete = async () => {
+    const timelineItem = {
+      type: 'project_completed',
+      data: {
+        brand_text: 'Project marked as complete',
+        creator_text: `Project completed by ${contract.created_by.name}`,
+        date: new Date(),
+        status: 'Completed'
+      }
+    };
+    await updateTimeline(timelineItem);
+  };
+
+  const renderTimelineItem = (item) => {
+    const text = isBrand ? item.data.brand_text : item.data.creator_text;
+    const date = new Date(item.data.date).toLocaleString();
+
+    return (
+      <Timeline.Item 
+        key={item.data.date}
+        dot={item.type === 'content_delivered' ? <PaperClipOutlined /> : <ClockCircleOutlined />}
+      >
+        <div className="timeline-item">
+          <div className="timeline-header">
+            <div className="font-weight-bold">{text}</div>
+            <div className="text-sm text-gray-500">{date}</div>
+          </div>
+
+          {item.data.amount && (
+            <div className="timeline-amount">
+              ${item.data.amount}
+            </div>
+          )}
+
+          {item.data.files && item.data.files.length > 0 && (
+            <div className="timeline-files">
+              {item.data.files.map((file, index) => (
+                <Image
+                  key={index}
+                  width={200}
+                  preview={{
+                    destroyOnClose: true,
+                    imageRender: () => (
+                      file.endsWith('.mp4') || file.endsWith('.mov') ? (
+                        <video
+                          muted
+                          width="100%"
+                          controls
+                          src={file}
+                        />
+                      ) : (
+                        <img src={file} alt="content" />
+                      )
+                    ),
+                    toolbarRender: () => null,
+                  }}
+                  src={file}
+                />
+              ))}
+            </div>
+          )}
+
+          {item.data.feedback && (
+            <div className="timeline-feedback mt-2">
+              <div className="text-gray-600">Feedback:</div>
+              <div>{item.data.feedback}</div>
+            </div>
+          )}
+
+          {item.type === 'content_delivered' && isBrand && (
+            <div className="timeline-actions mt-4 space-x-4">
+              <Button 
+                className='secondary-color-btn'
+                onClick={() => {
+                  setIsModalVisible(true);
+                }}
+              >
+                Request Revision
+              </Button>
+              <Button 
+                className='primary-solid-button'
+                onClick={handleMarkComplete}
+              >
+                Mark Complete
+              </Button>
+            </div>
+          )}
+        </div>
+      </Timeline.Item>
+    );
+  };
+
+  const renderActionButton = () => {
+    const lastItem = contract.timeline[contract.timeline.length - 1];
+    if (!lastItem) return null;
+
+    if (!isBrand && lastItem.type === 'product_shipped' && !contract.timeline.find(t => t.type === 'product_received')) {
+      return (
+        <Button onClick={handleProductReceived}>
+          Mark as Received
+        </Button>
+      );
+    }
+
+    if (!isBrand && lastItem.type === 'product_received' && !contract.timeline.find(t => t.type === 'content_delivered')) {
+      return (
+        <Button onClick={() => setIsModalVisible(true)}>
+          Submit Content
+        </Button>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <div>
+      <Timeline>
+        {contract.timeline.map(renderTimelineItem)}
+      </Timeline>
+
+      {renderActionButton()}
+
+      <Modal
+        title={isBrand ? "Request Revision" : "Submit Content"}
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        onOk={isBrand ? handleRevisionRequest : handleContentSubmit}
+      >
+        {isBrand ? (
+          <TextArea
+            rows={4}
+            placeholder="Enter revision feedback..."
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+          />
+        ) : (
+          <Upload
+            customRequest={handleUpload}
+            multiple={true}
+            showUploadList={true}
+          >
+            <Button icon={<UploadOutlined />} loading={loading}>
+              Upload Files
+            </Button>
+          </Upload>
+        )}
+      </Modal>
+    </div>
+  );
+};

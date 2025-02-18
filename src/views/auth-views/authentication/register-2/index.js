@@ -1,5 +1,5 @@
 import React from 'react'
-import RegisterForm from '../../components/RegisterForm'
+import RegisterForm from '../../components/BrandRegisterForm'
 import { Row, Col } from "antd";
 import { useSelector } from 'react-redux'
 

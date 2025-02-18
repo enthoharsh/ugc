@@ -34,8 +34,6 @@ const AllContracts = () => {
         key: "user",
         dataIndex: "user",
         render: (user) => {
-          console.log(user);
-
           return (
             <Space>
               <Avatar src={user.profile_picture} />
@@ -66,7 +64,6 @@ const AllContracts = () => {
         title: "Stared",
         dataIndex: "start_date",
         key: "start_date",
-        align: "center",
         render: (start_date) => (
           <div style={{ display: "flex", gap: "10px" }}>
             <Text>{new Date(start_date).toDateString()}</Text>
@@ -77,7 +74,6 @@ const AllContracts = () => {
         title: "Deadline",
         dataIndex: "end_date",
         key: "end_date",
-        align: "center",
         render: (end_date) => (
           <div style={{ display: "flex", gap: "10px" }}>
             <Text>{new Date(end_date).toDateString()}</Text>
@@ -116,11 +112,25 @@ const AllContracts = () => {
     const ContentTable = () => {
       return (
         <Table
+          className="campaign-detail-table"
           columns={columns1}
           dataSource={contracts.filter(contract => {
             if (key === "all") return true;
             return contract.status === key
           })}
+          onRow={(record, rowIndex) => {
+            return {
+              onClick: (event) => {
+                console.log(record);
+                if(window.location.pathname.includes('brand')) {
+                  // /app/brands/campaigns/campaign-detail/view-project/679b01b392bfe5c46e7b3bf6
+                  window.location.href = `/app/brands/campaigns/campaign-detail/view-project/${record._id}`;
+                } else {
+                  window.location.href = `/app/creators/campaigns/campaign-detail/view-project/${record._id}`;
+                }
+              },
+            };
+          }}
         // pagination={{
         //   total: 11,
         //   pageSize: 10,
