@@ -1,4 +1,4 @@
-import { auth, googleAuthProvider, facebookAuthProvider } from 'auth/FirebaseAuth';
+import { auth, googleAuthProvider } from 'auth/FirebaseAuth';
 
 const FirebaseService = {}
 
@@ -13,9 +13,6 @@ FirebaseService.signOutRequest = async () =>
 
 FirebaseService.signInGoogleRequest = async () =>
   await auth.signInWithPopup(googleAuthProvider).then(user => user).catch(err => err);
-
-FirebaseService.signInFacebookRequest = async () =>
-  await auth.signInWithPopup(facebookAuthProvider).then(user => user).catch(err => err);
 
 FirebaseService.signUpEmailRequest = async (email, password) =>
 	await auth.createUserWithEmailAndPassword(email, password).then(user => user).catch(err => err);	

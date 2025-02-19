@@ -263,18 +263,11 @@ export const LoginForm = props => {
 			<div className="d-flex justify-content-center">
 				<Button 
 					onClick={() => onGoogleLogin()} 
-					className="mr-2" 
+					className="mr-2 w-100" 
 					disabled={loading} 
 					icon={<CustomIcon svg={GoogleSVG}/>}
 				>
 					Google
-				</Button>
-				<Button 
-					onClick={() => onFacebookLogin()} 
-					icon={<CustomIcon svg={FacebookSVG}/>}
-					disabled={loading} 
-				>
-					Facebook
 				</Button>
 			</div>
 		</div>

@@ -19,7 +19,7 @@ export {
 	auth,
 	currentUser,
 	googleAuthProvider,
-	facebookAuthProvider,
+	//facebookAuthProvider,
 	twitterAuthProvider,
 	githubAuthProvider
 };
