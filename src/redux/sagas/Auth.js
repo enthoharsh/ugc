@@ -23,6 +23,8 @@ import { API_BASE_URL } from 'configs/AppConfig';
 export function* signInWithFBEmail() {
   yield takeEvery(SIGNIN, function* ({payload}) {
 		const {email, password} = payload;
+		console.log('email:', email, 'password:', password);
+
 		try {
 			const firebase_user = yield call(FirebaseService.signInEmailRequest, email, password);
 			if (firebase_user.message) {
@@ -100,7 +102,7 @@ export function* signUpWithFBEmail() {
 				// Store in localStorage
 				localStorage.setItem(AUTH_TOKEN, token);
 				localStorage.setItem('main_user', JSON.stringify(user));
-				
+					
 				// Dispatch success action
 				yield put(authenticated(token));
 			}

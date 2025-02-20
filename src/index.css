@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
 :root {
   --secondary-color: #FC52E4; 
   --dark-secondary-color: #D034BA; 
@@ -947,7 +945,26 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 .project-container .timeline-item {
   display: flex;
   flex-direction: column;
+  grid-gap: 4px;
   gap: 4px;
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #f4f6f8;
+}
+
+.project-container .timeline-header-for-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.timeline-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.timeline-item-title {
+  font-weight: 600;
 }
 
 .project-container .info-item {
@@ -971,14 +988,14 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 }
 
 .chat-layout {
-  height: 100vh;
+  height: 85vh;
 }
 
 .chat-layout .chat-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: calc(100vh - 120px);
+  height: calc(90vh - 130px);
   overflow-y: auto;
   padding: 20px;
 }
@@ -1044,56 +1061,194 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
   gap: 8px;
 }
 
-.chat-layout .timeline-card {
-  height: calc(100vh - 48px);
-  overflow-y: auto;
+.chat-layout .timeline-wrapper {
+  height: calc(92vh - 88px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.chat-layout .timeline-item {
+.timeline-header {
+  background: #fe5c02;
+  padding: 16px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.timeline-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse; /* Reverse the direction */
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.timeline-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.timeline-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.timeline-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.timeline-item {
+  padding: 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.timeline-item-content {
+  flex: 1;
+}
+
+.timeline-item-content > div:first-child {
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.timeline-amount {
+  color: #1a1a1a;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.timeline-item-date {
+  color: #666;
+  font-size: 13px;
+}
+
+.timeline-tracking {
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.timeline-tracking-label {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.timeline-tracking-id {
+  font-family: monospace;
+  background: #f1f1f1;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.timeline-notes {
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px;
+  margin-top: 12px;
+  color: #666;
+}
+
+.timeline-attachment {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+
+.timeline-attachment-info {
+  flex: 1;
+  margin-left: 12px;
+}
+
+.timeline-download-button {
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+}
+
+.timeline-action-button {
+  margin-top: 12px;
+  background: #ff1cf7;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.timeline-action-button:hover {
+  opacity: 0.9;
+}
+
+/* Custom date formatting */
+.timeline-date {
+  color: #666;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.timeline-attachments {
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.chat-layout .timeline-header {
+.timeline-attachment {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.chat-layout .timeline-amount {
-  color: #1890ff;
-}
-
-.chat-layout .timeline-tracking {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f5f5f5;
-  padding: 8px 12px;
-  border-radius: 4px;
-}
-
-.chat-layout .timeline-attachment {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f5f5f5;
-  padding: 8px 12px;
-  border-radius: 4px;
-}
-
-.chat-layout .timeline-notes {
-  background: #f5f5f5;
+  background: #fff;
   padding: 12px;
   border-radius: 4px;
 }
 
-.chat-layout .timeline-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
+.timeline-attachment-info {
+  flex: 1;
+  margin-left: 12px;
+  font-size: 14px;
+  color: #1a1a1a;
+  /* For long file names */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+.timeline-download-button {
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.timeline-download-button:hover {
+  color: #fe5c02;
+}
+
 /* VIEW PROJECT */
 
 
@@ -1441,4 +1596,182 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 
 .campaign-detail-table .ant-table-row {
   cursor: pointer;
+}
+
+.timeline-wrapper {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-header {
+  background: #fe5c02;
+  color: white;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline-content {
+  padding: 0;
+}
+
+.timeline-item {
+  padding: 20px;
+  background: #f8f9fa;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.timeline-item-content {
+  flex: 1;
+}
+
+.timeline-item-date {
+  color: #666;
+  font-size: 14px;
+  min-width: 100px;
+  text-align: right;
+}
+
+.timeline-amount {
+  color: #1a1a1a;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.timeline-tracking,
+.timeline-notes {
+  background: #fff;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.timeline-tracking-label,
+.timeline-notes-label {
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.timeline-tracking-id {
+  font-family: monospace;
+  background: #f1f1f1;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.timeline-action-button {
+  margin-top: 12px;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.timeline-action-button.primary {
+  background: #ff1cf7;
+  color: white;
+}
+
+.timeline-action-button.secondary {
+  background: #666;
+  color: white;
+}
+
+.timeline-attachment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.timeline-attachment-icon {
+  color: #666;
+}
+
+.timeline-attachment-info {
+  flex: 1;
+}
+
+.timeline-attachment-count {
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.timeline-download-button {
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  color: #1a1a1a;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timeline-modal {
+  .ant-modal-content {
+    border-radius: 12px;
+  }
+  
+  .ant-modal-header {
+    border-bottom: none;
+    padding: 24px 24px 0;
+  }
+  
+  .ant-modal-body {
+    padding: 24px;
+  }
+  
+  .ant-modal-footer {
+    border-top: none;
+    padding: 0 24px 24px;
+  }
+}
+
+.ant-timeline {
+  margin-top: 0 !important;
+}
+
+.ant-timeline-item {
+  padding-bottom: 0 !important;
+}
+
+.ant-timeline-item-content {
+  margin-bottom: 24px !important;
+}
+
+/* Custom upload button styles */
+.upload-button {
+  border: 1px dashed #d9d9d9;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-button:hover {
+  border-color: #ff1cf7;
 }

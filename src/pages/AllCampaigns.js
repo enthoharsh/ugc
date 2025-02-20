@@ -11,21 +11,17 @@ import EllipsisDropdown from 'components/shared-components/EllipsisDropdown';
 const { Option } = Select;
 
 const AllCampaigns = () => {
-  // const campaigns = Array(9).fill({
-  //   title: 'North Face Jacket Campaign',
-  //   img:'https://s3-alpha-sig.figma.com/img/9d96/bacf/2a6f28b430ffaf604168175af023db31?Expires=1737936000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=PeDj2yC-tvh24feMQ4S9jpdP0blvaaugI8UN8DK6W4Njm2mGf26e7dcwlJtks64I0AylK6BRnSOltari4H2r7dQaOJHskcviVI0TqIFHBoMut1Ue~BqHxlmVAKz6rV1fCxED5vA8QP6CL2inZgwlWkRDNM8uPbt-4bVhXMQjW3HVzBMLI6nn6n1Kf4ZYe1K0gx6Dq1BUoe1uJw-QYqsLPZQx3e~al1M3Jfyfi~xyHjkIOLEQlrsAUxTmeyCcbxqkoeZsKz6g-eNq7K9hDDf0eaJSvjgf9lbpA566hopqRDypAlLnwrAkooV7XWeCCbaGSSEDh7LxHpmlPhy~CZGbug__',
-  //   date: '12 Jul 2022',
-  //   proposals: 23,
-  //   type: 'Product',
-  //   style: 'Reel Style',
-  //   platforms: ['Instagram', 'TikTok'],
-  //   creators: 3
-  // });
 
   const [campaigns, setCampaigns] = React.useState([]);
+  const [sortBy, setSortBy] = React.useState('Name');
+  const [search, setSearch] = React.useState('');
 
   useEffect(() => {
-    api.get("Campaigns").then((res) => {
+    api.get("Campaigns", {
+      sortColumn: sortBy === 'Date' ? 'createdAt' : 'campaign_name',
+      sortDirection: sortBy === 'Date' ? 'desc' : 'asc',
+      search
+    }).then((res) => {
       setCampaigns(res.data.data.map((campaign) => ({
         title: campaign.campaign_name,
         img: campaign.product_brand_logo,
@@ -39,14 +35,7 @@ const AllCampaigns = () => {
         ...campaign
       })));
     });
-  }, []);
-
-  const campaignDropdownMenuItems = [
-    {
-      key: '1',
-      label: 'Delete',
-    }
-  ];
+  }, [sortBy, search]);
 
   return (
     <div className="allCamp-container">
@@ -71,11 +60,12 @@ const AllCampaigns = () => {
           placeholder="Search..."
           prefix={<SearchOutlined />}
           className="allCamp-search-input"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-        <Select defaultValue="Featured" className="allCamp-sort-select">
-          <Option value="Featured">Sort By: Featured</Option>
-          <Option value="date">Date</Option>
-          <Option value="name">Name</Option>
+        <Select defaultValue="name" className="allCamp-sort-select" style={{ width: 180 }} value={sortBy} onChange={(value) => setSortBy(value)}>
+          <Option value="Date">Sort By: Date</Option>
+          <Option value="Name">Sort By: Name</Option>
         </Select>
       </div>
 

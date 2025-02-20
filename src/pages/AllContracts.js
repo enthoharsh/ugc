@@ -126,7 +126,7 @@ const AllContracts = () => {
                   // /app/brands/campaigns/campaign-detail/view-project/679b01b392bfe5c46e7b3bf6
                   window.location.href = `/app/brands/campaigns/campaign-detail/view-project/${record._id}`;
                 } else {
-                  window.location.href = `/app/creators/campaigns/campaign-detail/view-project/${record._id}`;
+                  window.location.href = `/app/creators/view-contract/${record._id}`;
                 }
               },
             };
