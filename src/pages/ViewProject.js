@@ -405,7 +405,9 @@ const ViewProject = () => {
   const [tabKey, setTabKey] = useState(1);
   const [contractInfo, setContractInfo] = useState({});
   const { id } = useParams();
-
+  const user = JSON.parse(localStorage.getItem("main_user"));
+  const isBrand = user.role === "Brand";
+  
   const getContractDetails = async (payload) => {
     const CampaignResp = await api.getSingle(`Contracts`, payload);
 
@@ -491,12 +493,12 @@ const ViewProject = () => {
           >
             Messages
           </span>
-          <span
+          {isBrand ? null : <span
             className={`${tabKey == 3 ? "active" : ""}`}
             onClick={() => setTabKey(3)}
           >
             Project Details
-          </span>
+          </span>}
         </div>
       </Card>
 

@@ -891,9 +891,10 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 .project-container .header-card {
   margin-bottom: 24px;
   background: #ffdbc729;
-  border: 1px solid var(--dark-primary-color);
+  border: 1px solid #fd5c0230;
   padding-bottom: 0 !important;
 }
+
 .project-container .header-card .ant-card-body {
   padding-bottom: 0 !important;
 }
@@ -1774,4 +1775,8 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 
 .upload-button:hover {
   border-color: #ff1cf7;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active path {
+  fill: #fd5c02 !important;
 }

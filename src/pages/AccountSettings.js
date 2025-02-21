@@ -55,6 +55,7 @@ const AccountSettings = () => {
 
       form.setFieldsValue({
         name: res.user.name,
+        last_name: res.user.last_name,
         email: res.user.email,
         phone: res.user.phone,
         brand_name: res.user.brand_name,
@@ -494,10 +495,25 @@ const AccountSettings = () => {
       key: "About",
       label: (
         <>
-          <span className="mr-2">
-            <IdcardOutlined />
+        
+          <span className="mr-2 mt-1">
+            <svg
+              width={20}
+              height={12}
+              fill="none"
+              viewBox="0 0 20 16"
+            >
+              <path
+                fill="#454F5B"
+                fillRule="evenodd"
+                d="M8 0h4c3.771 0 5.657 0 6.828 1.172C20 2.343 20 4.229 20 8c0 3.771 0 5.657-1.172 6.828C17.657 16 15.771 16 12 16H8c-3.771 0-5.657 0-6.828-1.172C0 13.657 0 11.771 0 8c0-3.771 0-5.657 1.172-6.828C2.343 0 4.229 0 8 0Zm3.25 5a.75.75 0 0 1 .75-.75h5a.75.75 0 1 1 0 1.5h-5a.75.75 0 0 1-.75-.75Zm1 3a.75.75 0 0 1 .75-.75h4a.75.75 0 1 1 0 1.5h-4a.75.75 0 0 1-.75-.75Zm1 3a.75.75 0 0 1 .75-.75h3a.75.75 0 1 1 0 1.5h-3a.75.75 0 0 1-.75-.75ZM9 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm-2 8c4 0 4-.895 4-2S9.21 9 7 9s-4 .895-4 2 0 2 4 2Z"
+                clipRule="evenodd"
+              />
+            </svg>
           </span>
-          About
+          <span style={{ fontWeight: "500" }}>
+            About
+          </span>
         </>
       ),
       children: <AccountProfile />, // Replace with actual content
@@ -506,10 +522,19 @@ const AccountSettings = () => {
       key: "Billing",
       label: (
         <>
-          <span className="mr-2">
-            <FileTextOutlined />
+          <span className="mr-2 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width={18} height={12} fill="none" viewBox="0 0 18 20">
+              <path
+                fill="#454F5B"
+                fillRule="evenodd"
+                d="M4.245-.01h9.51c1.159 0 1.738 0 2.206.163a3.044 3.044 0 0 1 1.881 1.936C18 2.571 18 3.167 18 4.36v14.004c0 .858-.985 1.314-1.608.744a.946.946 0 0 0-1.284 0l-.483.442a1.657 1.657 0 0 1-2.25 0 1.657 1.657 0 0 0-2.25 0 1.657 1.657 0 0 1-2.25 0 1.657 1.657 0 0 0-2.25 0 1.657 1.657 0 0 1-2.25 0l-.483-.442a.946.946 0 0 0-1.284 0c-.623.57-1.608.114-1.608-.744V4.36c0-1.193 0-1.79.158-2.27.3-.913.995-1.629 1.881-1.937C2.507-.01 3.086-.01 4.245-.01ZM4 4.74a.75.75 0 0 0 0 1.5h.5a.75.75 0 1 0 0-1.5H4Zm3.5 0a.75.75 0 0 0 0 1.5H14a.75.75 0 1 0 0-1.5H7.5ZM4 8.24a.75.75 0 0 0 0 1.5h.5a.75.75 0 1 0 0-1.5H4Zm3.5 0a.75.75 0 0 0 0 1.5H14a.75.75 0 1 0 0-1.5H7.5ZM4 11.74a.75.75 0 0 0 0 1.5h.5a.75.75 0 1 0 0-1.5H4Zm3.5 0a.75.75 0 0 0 0 1.5H14a.75.75 0 1 0 0-1.5H7.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
           </span>
-          Billing
+          <span style={{ fontWeight: "500" }}>
+            Billing
+          </span>
         </>
       ),
       children: <Billing />, // Replace with actual content
@@ -518,10 +543,14 @@ const AccountSettings = () => {
       key: "Payment History",
       label: (
         <>
-          <span className="mr-2">
-            <DollarOutlined />
+          <span className="mr-2 mt-1">
+            <svg width="20" height="12" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.25 0C3.933 0.006 2.693 0.0629998 1.778 0.674C1.34106 0.965911 0.965911 1.34106 0.674 1.778C0 2.787 0 4.19 0 7C0 9.809 0 11.213 0.674 12.222C0.965911 12.6589 1.34106 13.0341 1.778 13.326C2.693 13.937 3.933 13.994 6.25 14V9.905C5.60644 9.73819 5.03649 9.3624 4.62962 8.83662C4.22274 8.31083 4.00198 7.66483 4.00198 7C4.00198 6.33517 4.22274 5.68917 4.62962 5.16338C5.03649 4.6376 5.60644 4.26181 6.25 4.095V0ZM7.75 14H12.25V0H7.75V14ZM13.75 0V4.095C14.3936 4.26181 14.9635 4.6376 15.3704 5.16338C15.7773 5.68917 15.998 6.33517 15.998 7C15.998 7.66483 15.7773 8.31083 15.3704 8.83662C14.9635 9.3624 14.3936 9.73819 13.75 9.905V14C16.067 13.994 17.308 13.937 18.222 13.326C18.6589 13.034 19.034 12.6589 19.326 12.222C20 11.213 20 9.81 20 7C20 4.191 20 2.787 19.326 1.778C19.034 1.34109 18.6589 0.965951 18.222 0.674C17.307 0.0629998 16.067 0.005 13.75 0Z" fill="#454F5B"/>
+            </svg>
           </span>
-          Payment History
+          <span style={{ fontWeight: "500" }}>
+            Payment History
+          </span>
         </>
       ),
       children: <PaymentHistory />, // Replace with actual content
@@ -533,8 +562,8 @@ const AccountSettings = () => {
       <Title level={3} className="campaign-title">
         Account Settings
       </Title>
-      <Title level={5} style={{fontWeight:'400',fontSize:'16px',margin:'5px 0'}}>
-        Account &#183; <span style={{color:'#fe5c02'}} >{ActKey}</span>
+      <Title level={5} style={{fontWeight:'400',fontSize:'14px', margin:'5px 0', marginBottom:'40px', fontWeight: '500'}} >
+        Account <span className="mr-3 ml-3">&#183;</span>  <span style={{color:'#fe5c02'}} >{ActKey}</span>
       </Title>
       <Tabs
         defaultActiveKey="About"
