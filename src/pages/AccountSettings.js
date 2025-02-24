@@ -15,6 +15,7 @@ import {
 import { LoadingOutlined } from "@ant-design/icons";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { api } from "auth/FetchInterceptor";
+import PayPalSettings from "components/PayPalSettings";
 const { Title, Text } = Typography;
 
 const { TabPane } = Tabs;
@@ -259,6 +260,15 @@ const AccountSettings = () => {
           </Button>
         </Form.Item>
       </Form>
+
+      <PayPalSettings 
+        userData={form.getFieldsValue(true)}
+        loading={loading}
+        onDisconnect={() => {
+          // Refresh user data after disconnecting
+          getUserDetails();
+        }}
+      />
     </div>
   );
 
