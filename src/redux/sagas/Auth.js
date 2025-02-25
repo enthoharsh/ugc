@@ -49,7 +49,7 @@ export function* signInWithFBEmail() {
 				localStorage.setItem('main_user', JSON.stringify(user));
 				
 				// Dispatch success action
-				yield put(authenticated(token));
+				yield put(authenticated(token, user));
 			}
 		} catch (err) {
 			yield put(showAuthMessage(err));
@@ -104,7 +104,7 @@ export function* signUpWithFBEmail() {
 				localStorage.setItem('main_user', JSON.stringify(user));
 					
 				// Dispatch success action
-				yield put(authenticated(token));
+				yield put(authenticated(token, user));
 			}
 		} catch (error) {
 			console.log('error:', error);

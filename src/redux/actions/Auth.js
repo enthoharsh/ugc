@@ -21,10 +21,11 @@ export const signIn = (user) => {
   }
 };
 
-export const authenticated = (token) => {
+export const authenticated = (token, user) => {
   return {
     type: AUTHENTICATED,
-    token
+    token,
+    user
   }
 };
 
