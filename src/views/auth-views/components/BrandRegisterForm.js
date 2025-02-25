@@ -8,14 +8,14 @@ import {
   BankOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input, Select, Checkbox, Steps, message } from "antd";
-import {
-  showAuthMessage,
-  showLoading,
-  hideAuthMessage,
-  authenticated,
-  signUp,
-  signIn,
-} from "redux/actions/Auth";
+import { 
+	signIn, 
+	showLoading, 
+	showAuthMessage, 
+	hideAuthMessage, 
+	signInWithGoogle, 
+	signInWithFacebook 
+} from 'redux/actions/Auth';
 import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion";
 import JwtAuthService from "services/JwtAuthService";
@@ -26,11 +26,27 @@ import FirebaseService from "services/FirebaseService";
 
 const { Option } = Select;
 
-const BrandRegisterForm = (props) => {
-  const { showLoading, signUp, loading, signIn } = props;
+const BrandRegisterForm = props => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
+
+  const { 
+		otherSignIn, 
+		showForgetPassword, 
+		hideAuthMessage,
+		onForgetPasswordClick,
+		showLoading,
+		signInWithGoogle,
+		signInWithFacebook,
+		extra, 
+		signIn, 
+		token, 
+		loading,
+		redirect,
+		showMessage,
+		allowRedirect
+	} = props
 
   const steps = [
     { title: "Basic Info" },
@@ -385,12 +401,12 @@ const mapStateToProps = ({ auth }) => {
 };
 
 const mapDispatchToProps = {
-  signIn,
-  signUp,
-  showAuthMessage,
-  hideAuthMessage,
-  showLoading,
-  authenticated,
+	signIn,
+	showAuthMessage,
+	showLoading,
+	hideAuthMessage,
+	signInWithGoogle,
+	signInWithFacebook
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(BrandRegisterForm);

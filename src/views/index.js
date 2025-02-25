@@ -29,8 +29,24 @@ function RouteInterceptor({ children, isAuthenticated, ...rest }) {
 }
 export const Views = (props) => {
   const { locale, token, location, direction } = props;
+
+  console.log('Views', props);
+
   const currentAppLocale = AppLocale[locale];
   useBodyClass(`dir-${direction}`);
+
+  if(token) {
+    return (
+      <IntlProvider
+        locale={currentAppLocale.locale}
+        messages={currentAppLocale.messages}>
+        <ConfigProvider locale={currentAppLocale.antd} direction={direction}>
+          <AppLayout direction={direction} location={location}/>
+        </ConfigProvider>
+      </IntlProvider>
+    );
+  }
+
   return (
     <IntlProvider
       locale={currentAppLocale.locale}
@@ -43,9 +59,6 @@ export const Views = (props) => {
           <Route path={AUTH_PREFIX_PATH}>
             <AuthLayout direction={direction} />
           </Route>
-          {/* <Route path={APP_PREFIX_PATH}>
-            <AppLayout direction={direction} location={location}/>
-          </Route> */}
           <RouteInterceptor path={APP_PREFIX_PATH} isAuthenticated={token}>
             <AppLayout direction={direction} location={location}/>
           </RouteInterceptor>
