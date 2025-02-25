@@ -140,11 +140,14 @@ const CampaignInfo = (props) => {
       {campaignInfo ? <div className="campaign-container">
         <Title level={2}>Project Details</Title>
         <div className="campaign-header">
-          {/* Back Button */}
-
-          {/* <Button type="link" className="back-button">
-          &lt; Back
-        </Button> */}
+          <div className="back-button" style={{ fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'black' }} onClick={() => history.goBack()}>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg" style={{
+              marginRight: '15px'
+            }}>
+              <path d="M5.52473 11.8333C5.27257 11.8341 5.03359 11.7208 4.87473 11.5249L0.849729 6.52492C0.596965 6.21742 0.596965 5.77409 0.849729 5.46659L5.0164 0.46659C5.31095 0.112207 5.83701 0.0637046 6.1914 0.358257C6.54578 0.652808 6.59428 1.17887 6.29973 1.53326L2.57473 5.99992L6.17473 10.4666C6.38281 10.7164 6.42664 11.0643 6.28702 11.3579C6.14739 11.6515 5.84979 11.8371 5.52473 11.8333Z" fill="initial" />
+              </svg>
+            Back
+          </div>
           <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
             {window.location.href.includes("creator") && <Button className="primary-color-btn" onClick={showModal}>
               Submit Application

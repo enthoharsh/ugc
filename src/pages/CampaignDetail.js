@@ -351,6 +351,19 @@ const CampaignDetail = () => {
                   </p>
                 </div>
               </div>
+              <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
+                <div style={{ width: "20%" }}>Portfolio :</div>
+                <div style={{ width: "80%" }}>
+                  <a
+                    href={'/app/brands/portfolio/' + selectedDetails.created_by._id}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#d946ef" }}
+                  >
+                    View Profile ↗
+                  </a>
+                </div>
+              </div>
               {/* <div className="mb-3" style={{ display: "flex", gap: "10px" }}>
                 <div style={{ width: "20%" }}>Portfolio :</div>
                 <div style={{ width: "80%" }}>
@@ -382,7 +395,7 @@ const CampaignDetail = () => {
                   style={{ background: "#e0f2fe", color: "#0284c7" }}
                   onClick={() => applicationShortlist(selectedDetails._id)}
                 >
-                  Shortlisted
+                  Shortlist
                 </Button>
                 <Button
                   type="default"

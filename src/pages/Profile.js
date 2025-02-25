@@ -30,6 +30,7 @@ import {
 } from "components/icons";
 import { api } from "auth/FetchInterceptor";
 import Dragger from "antd/lib/upload/Dragger";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -41,6 +42,7 @@ const ProfileCard = () => {
   const [uploadedVideos, setUploadedVideos] = useState([]);
   const user = JSON.parse(localStorage.getItem("main_user"));
   const isCreator = user.role === "Creator";
+  const { id } = useParams();
 
   // Form states
   const [formData, setFormData] = useState({
@@ -63,7 +65,7 @@ const ProfileCard = () => {
   const fetchPortfolio = async () => {
     try {
       const response = await api.get("Portfolios", {
-        tabFilter: { user_id: user._id },
+        tabFilter: { user_id: isCreator ? user._id : id },
       });
 
       console.log(response);
@@ -224,8 +226,11 @@ const ProfileCard = () => {
             "https://images.unsplash.com/photo-1736254329261-5595925b7e25?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           })`,
           position: "relative",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
         }}
       >
+        <div className="overlay"></div>
         {editMode && (
           <Upload
             customRequest={handleUploadCover}
@@ -261,8 +266,8 @@ const ProfileCard = () => {
             </Text>
           </div>
         </div>
-        <div className="availability">
-          <Text>Are you available for new projects?</Text>
+        <div className="availability" style={{ marginBottom: "20px" }}>
+          <Title style={{margin: 0}} level={4}>{editMode ? "Are you available for new projects?" : "Is available for new projects?"}</Title>
           {editMode ? (
             <Switch
               checked={formData.available}
@@ -271,7 +276,7 @@ const ProfileCard = () => {
               }
             />
           ) : (
-            <Switch checked={formData.available} disabled />
+            <img src={formData.available ? "/img/tick.png" : "/img/cross.png"} alt="availability" style={{ width: 20 }} />
           )}
         </div>
         <div style={{ display: "flex", gap: "28px" }}>

@@ -152,7 +152,10 @@ const BrandRegisterForm = (props) => {
         message.error(res2.message);
       } else {
         message.success("Registration successful");
-        signIn(values);
+        signIn({
+          email: finalFormData.email,
+          password: finalFormData.password,
+        });
       }
     } else {
       message.error(res.data.message);

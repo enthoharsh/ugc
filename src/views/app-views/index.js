@@ -16,6 +16,7 @@ export const AppViews = () => {
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/all-campaigns`} component={lazy(() => import(`../../pages/AllCampaigns`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/campaign-detail/:id`} component={lazy(() => import(`../../pages/CampaignDetail`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/campaign-detail/view-project/:id`} component={lazy(() => import(`../../pages/ViewProject`))} />
+        <Route exact path={`${APP_PREFIX_PATH}/brands/portfolio/:id`} component={lazy(() => import(`../../pages/Profile`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/campaign-detail/campaign-info/:id`} component={lazy(() => import(`../../pages/CampaignInfo`))} />
         <Route path={`${APP_PREFIX_PATH}/brands/account-settings`} component={lazy(() => import(`../../pages/AccountSettings`))} />
 

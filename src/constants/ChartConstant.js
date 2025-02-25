@@ -152,7 +152,7 @@ export const apexPieChartDefaultOption = {
 						fontSize: '18px',
 						fontFamily: 'Roboto',
 						fontWeight: 'bold',
-						color: '#1a3353',
+						color: '#101010',
 						formatter: function (w) {
 							return w.globals.seriesTotals.reduce((a, b) => {
 								return a + b

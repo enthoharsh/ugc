@@ -386,11 +386,14 @@ const ChatInterface = ({ contractInfo }) => {
                 loading={loading}
               />
             </Upload>
-            <Button
-              icon={<SendOutlined />}
-              onClick={sendMessage}
-              disabled={loading}
-            />
+            <Button icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M0.834522 3.55271C0.617856 1.60771 2.62036 0.179373 4.38952 1.01771L14.3429 5.73271C16.2495 6.63521 16.2495 9.34854 14.3429 10.251L4.38952 14.9669C2.62036 15.8052 0.618689 14.3769 0.834522 12.4319L1.23452 8.82521H7.99952C8.22054 8.82521 8.4325 8.73741 8.58878 8.58113C8.74506 8.42485 8.83286 8.21289 8.83286 7.99187C8.83286 7.77086 8.74506 7.5589 8.58878 7.40262C8.4325 7.24634 8.22054 7.15854 7.99952 7.15854H1.23536L0.835356 3.55271H0.834522Z"
+                  fill="black"
+                />
+              </svg>} onClick={sendMessage} disabled={loading}/>
           </div>
         </div>
       </Content>
@@ -407,7 +410,7 @@ const ViewProject = () => {
   const { id } = useParams();
   const user = JSON.parse(localStorage.getItem("main_user"));
   const isBrand = user.role === "Brand";
-  
+
   const getContractDetails = async (payload) => {
     const CampaignResp = await api.getSingle(`Contracts`, payload);
 
@@ -493,12 +496,14 @@ const ViewProject = () => {
           >
             Messages
           </span>
-          {isBrand ? null : <span
-            className={`${tabKey == 3 ? "active" : ""}`}
-            onClick={() => setTabKey(3)}
-          >
-            Project Details
-          </span>}
+          {isBrand ? null : (
+            <span
+              className={`${tabKey == 3 ? "active" : ""}`}
+              onClick={() => setTabKey(3)}
+            >
+              Project Details
+            </span>
+          )}
         </div>
       </Card>
 
