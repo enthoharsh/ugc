@@ -1,47 +1,49 @@
 import React, { useState, useEffect } from "react";
 import {
-  Row,
-  Col,
-  Card,
-  Typography,
-  Statistic,
-  Button,
-  List,
-  Tag,
-  Avatar,
-  Empty,
-  Divider,
-  Space,
-  Badge,
+  Row, Col, Card, Typography, Statistic, Button, 
+  List, Tag, Avatar, Space, Badge, Spin, Empty
 } from "antd";
 import {
-  VideoCameraOutlined,
-  TeamOutlined,
-  DollarOutlined,
-  EyeOutlined,
-  PlusOutlined,
-  RiseOutlined,
-  CalendarOutlined,
+  VideoCameraOutlined, TeamOutlined, DollarOutlined, 
+  EyeOutlined, PlusOutlined, RiseOutlined, CalendarOutlined
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import { api } from "auth/FetchInterceptor";
-import Chart from "react-apexcharts";
+import { api } from 'auth/FetchInterceptor';
 
 const { Title, Text } = Typography;
 
 const BrandDashboard = () => {
+  // State for dynamic data
+  const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalCampaigns: 0,
     activeCampaigns: 0,
     totalCreators: 0,
-    totalSpent: 0,
+    totalSpent: 0
   });
 
-  const user = JSON.parse(localStorage.getItem("main_user"));
+  // Get user from localStorage for personalization
+  const user = JSON.parse(localStorage.getItem("main_user") || '{}');
+
+  // Define a consistent color palette matching your theme
+  const colors = {
+    primary: "#fd5c02", // Main brand color
+    secondary: "#FC52E4", // Secondary accent color
+    success: "#4CAF50", // Green for positive indicators
+    warning: "#faad14", // Orange for warnings/neutral indicators
+    danger: "#F5222D", // Red for negative indicators
+    info: "#1890ff", // Blue for information
+    text: "#2C3E50", // Primary text color
+    lightText: "#8392A5", // Secondary text color
+    background: "#F8FAFC", // Dashboard background
+  };
+
+  // Navigate to a specific route
+  const navigateTo = (path) => {
+    window.location.href = path;
+  };
 
   // Fetch dashboard data
   useEffect(() => {
@@ -50,60 +52,65 @@ const BrandDashboard = () => {
       try {
         // Fetch brand's campaigns
         const campaignsResponse = await api.get("Campaigns", {
-          tabFilter: { created_by_id: user._id },
+          tabFilter: { created_by_id: user._id }
         });
 
         // Fetch brand's contracts
         const contractsResponse = await api.get("Contracts", {
-          tabFilter: { created_by_id: user._id },
+          tabFilter: { created_by_id: user._id }
         });
 
-        // Fetch applications for brand's campaigns
-        const campaignIds =
-          campaignsResponse.data?.data?.map((campaign) => campaign._id) || [];
-        let allApplications = [];
-
-        if (campaignIds.length > 0) {
-          const applicationsPromises = campaignIds.map((id) =>
-            api.get("Applications", { tabFilter: { campaign_id: id } })
-          );
-
-          const applicationsResponses = await Promise.all(applicationsPromises);
-          allApplications = applicationsResponses.flatMap(
-            (response) => response.data?.data || []
-          );
-        }
-
-        // Process data
-        if (campaignsResponse.data && contractsResponse.data) {
+        // Process campaign data
+        if (campaignsResponse?.data?.data) {
           const campaignsData = campaignsResponse.data.data || [];
-          const contractsData = contractsResponse.data.data || [];
-
           setCampaigns(campaignsData);
-          setContracts(contractsData);
-          setApplications(allApplications);
 
+          // Fetch applications for each campaign
+          const campaignIds = campaignsData.map(campaign => campaign._id);
+          
+          if (campaignIds.length > 0) {
+            const applicationsResponse = await api.get("Applications", {
+              tabFilter: { campaign_id: { $in: campaignIds } }
+            });
+            
+            if (applicationsResponse?.data?.data) {
+              setApplications(applicationsResponse.data.data || []);
+            }
+          }
+          
           // Calculate statistics
           const activeCampaigns = campaignsData.filter(
-            (campaign) => !campaign.is_completed && !campaign.is_cancelled
+            campaign => !campaign.is_completed && !campaign.is_cancelled
           ).length;
-
+          
+          setStats(prevStats => ({
+            ...prevStats,
+            totalCampaigns: campaignsData.length,
+            activeCampaigns
+          }));
+        }
+        
+        // Process contract data
+        if (contractsResponse?.data?.data) {
+          const contractsData = contractsResponse.data.data || [];
+          setContracts(contractsData);
+          
+          // Calculate spending
           const totalSpent = contractsData.reduce(
             (sum, contract) => sum + (contract.amount || 0),
             0
           );
-
+          
           // Get unique creators
           const uniqueCreatorIds = new Set(
-            contractsData.map((contract) => contract.user_id).filter(Boolean)
+            contractsData.map(contract => contract.user_id).filter(Boolean)
           );
-
-          setStats({
-            totalCampaigns: campaignsData.length,
-            activeCampaigns,
+          
+          setStats(prevStats => ({
+            ...prevStats,
             totalCreators: uniqueCreatorIds.size,
-            totalSpent,
-          });
+            totalSpent
+          }));
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -115,111 +122,20 @@ const BrandDashboard = () => {
     fetchDashboardData();
   }, [user._id]);
 
-  // Chart options for campaign performance
-  const campaignPerformanceOptions = {
-    options: {
-      chart: {
-        type: "bar",
-        toolbar: {
-          show: false,
-        },
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "55%",
-          borderRadius: 4,
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      colors: ["#FD5C02"],
-      xaxis: {
-        categories: [
-          "Campaign 1",
-          "Campaign 2",
-          "Campaign 3",
-          "Campaign 4",
-          "Campaign 5",
-        ],
-        labels: {
-          style: {
-            colors: "#8e8e8e",
-          },
-        },
-      },
-      yaxis: {
-        title: {
-          text: "Applications",
-        },
-        labels: {
-          style: {
-            colors: "#8e8e8e",
-          },
-        },
-      },
-      tooltip: {
-        y: {
-          formatter: function (val) {
-            return val + " applications";
-          },
-        },
-      },
-    },
-    series: [
-      {
-        name: "Applications",
-        data: [12, 8, 15, 5, 10],
-      },
-    ],
+  // Format date nicely
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
   };
 
-  // Chart options for spending
-  const spendingOptions = {
-    options: {
-      chart: {
-        type: "donut",
-      },
-      colors: ["#FD5C02", "#FC52E4", "#52c41a", "#faad14"],
-      labels: [
-        "Video Production",
-        "Social Media",
-        "Product Highlights",
-        "Testimonials",
-      ],
-      legend: {
-        position: "bottom",
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 300,
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-      ],
-    },
-    series: [4200, 3800, 2600, 1800],
-  };
-
-  // Define a consistent color palette
-  const colors = {
-    primary: "#fd5c02", // Main brand color
-    secondary: "#FC52E4", // Secondary accent color
-    success: "#4CAF50", // Green for positive indicators
-    warning: "#fd5c02", // Orange for warnings/neutral indicators
-    danger: "#F5222D", // Red for negative indicators
-    info: "#fd5c02", // Blue for information
-    text: "#2C3E50", // Primary text color
-    lightText: "#8392A5", // Secondary text color
-    background: "#F8FAFC", // Dashboard background
-  };
+  // Loading state
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -243,7 +159,7 @@ const BrandDashboard = () => {
         <Row align="middle" justify="space-between">
           <Col>
             <Title level={3} style={{ margin: 0, color: colors.text }}>
-              Welcome back, {user.name}!
+              Welcome back, {user.name || 'Brand'}!
             </Title>
             <div style={{ marginTop: 8 }}>
               <Text style={{ color: colors.lightText }}>
@@ -252,18 +168,17 @@ const BrandDashboard = () => {
             </div>
           </Col>
           <Col>
-            <Link to="/app/brands/campaigns/order-form">
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                style={{
-                  background: colors.primary,
-                  borderColor: colors.primary,
-                }}
-              >
-                New Campaign
-              </Button>
-            </Link>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigateTo('/app/brands/campaigns/order-form')}
+              style={{
+                background: colors.primary,
+                borderColor: colors.primary,
+              }}
+            >
+              New Campaign
+            </Button>
           </Col>
         </Row>
       </div>
@@ -352,77 +267,22 @@ const BrandDashboard = () => {
           <Card
             title={
               <Title level={5} style={{ margin: 0 }}>
-                Campaign Performance
-              </Title>
-            }
-            style={{
-              marginBottom: 24,
-              borderRadius: "8px",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-            }}
-            extra={
-              <Button type="link" style={{ color: colors.primary }}>
-                View Details
-              </Button>
-            }
-          >
-            <Chart
-              options={{
-                ...campaignPerformanceOptions.options,
-                colors: [colors.primary, colors.secondary],
-                theme: {
-                  mode: "light",
-                  palette: "palette1",
-                },
-                chart: {
-                  ...campaignPerformanceOptions.options.chart,
-                  toolbar: {
-                    show: false,
-                  },
-                  fontFamily:
-                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
-                },
-                grid: {
-                  borderColor: "#f1f1f1",
-                },
-                xaxis: {
-                  ...campaignPerformanceOptions.options.xaxis,
-                  labels: {
-                    style: {
-                      colors: colors.lightText,
-                    },
-                  },
-                },
-                yaxis: {
-                  labels: {
-                    style: {
-                      colors: colors.lightText,
-                    },
-                  },
-                },
-              }}
-              series={campaignPerformanceOptions.series}
-              type="bar"
-              height={300}
-            />
-          </Card>
-
-          <Card
-            title={
-              <Title level={5} style={{ margin: 0 }}>
                 Recent Campaigns
               </Title>
             }
             style={{
               borderRadius: "8px",
               boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+              marginBottom: 24,
             }}
             extra={
-              <Link to="/app/brands/campaigns/all-campaigns">
-                <Button type="link" style={{ color: colors.primary }}>
-                  View All
-                </Button>
-              </Link>
+              <Button 
+                type="link" 
+                style={{ color: colors.primary }}
+                onClick={() => navigateTo('/app/brands/campaigns/all-campaigns')}
+              >
+                View All
+              </Button>
             }
           >
             {campaigns.length > 0 ? (
@@ -432,17 +292,14 @@ const BrandDashboard = () => {
                 renderItem={(campaign) => (
                   <List.Item
                     actions={[
-                      <Link
-                        to={`/app/brands/campaigns/campaign-detail/${campaign._id}`}
+                      <Button
+                        type="link"
+                        icon={<EyeOutlined />}
+                        style={{ color: colors.primary }}
+                        onClick={() => navigateTo(`/app/brands/campaigns/campaign-detail/${campaign._id}`)}
                       >
-                        <Button
-                          type="link"
-                          icon={<EyeOutlined />}
-                          style={{ color: colors.primary }}
-                        >
-                          View
-                        </Button>
-                      </Link>,
+                        View
+                      </Button>,
                     ]}
                   >
                     <List.Item.Meta
@@ -452,7 +309,7 @@ const BrandDashboard = () => {
                           src={campaign.product_brand_logo}
                         />
                       }
-                      title={<Text strong>{campaign.campaign_name}</Text>}
+                      title={<Text strong>{campaign.campaign_name || 'Unnamed Campaign'}</Text>}
                       description={
                         <Space
                           direction="vertical"
@@ -460,7 +317,7 @@ const BrandDashboard = () => {
                           style={{ width: "100%" }}
                         >
                           <Text style={{ color: colors.text }}>
-                            Product: {campaign.product_name}
+                            Product: {campaign.product_name || 'Not specified'}
                           </Text>
                           <div>
                             {campaign.campaign_budget && (
@@ -486,7 +343,7 @@ const BrandDashboard = () => {
                               Applications:{" "}
                               {
                                 applications.filter(
-                                  (app) => app.campaign_id === campaign._id
+                                  app => app.campaign_id === campaign._id
                                 ).length
                               }
                             </Text>
@@ -502,15 +359,93 @@ const BrandDashboard = () => {
                 description={
                   <span>
                     No campaigns found.{" "}
-                    <Link
-                      to="/app/brands/campaigns/order-form"
-                      style={{ color: colors.primary }}
+                    <Button 
+                      type="link"
+                      style={{ color: colors.primary, padding: 0 }}
+                      onClick={() => navigateTo('/app/brands/campaigns/order-form')}
                     >
                       Create one now!
-                    </Link>
+                    </Button>
                   </span>
                 }
               />
+            )}
+          </Card>
+
+          <Card
+            title={
+              <Title level={5} style={{ margin: 0 }}>
+                Application Statistics
+              </Title>
+            }
+            style={{
+              borderRadius: "8px",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+            }}
+          >
+            {campaigns.length > 0 ? (
+              <List
+                itemLayout="horizontal"
+                dataSource={campaigns.slice(0, 3)}
+                renderItem={(campaign) => {
+                  const campaignApplications = applications.filter(
+                    app => app.campaign_id === campaign._id
+                  );
+                  
+                  const applied = campaignApplications.filter(app => app.status === 'Applied').length;
+                  const shortlisted = campaignApplications.filter(app => app.status === 'Shortlisted').length;
+                  const hired = campaignApplications.filter(app => app.status === 'Hired').length;
+                  
+                  return (
+                    <List.Item>
+                      <List.Item.Meta
+                        avatar={
+                          <Avatar
+                            size="large"
+                            src={campaign.product_brand_logo}
+                          />
+                        }
+                        title={
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Text strong>{campaign.campaign_name || 'Unnamed Campaign'}</Text>
+                            <Text type="secondary" style={{ fontSize: '12px' }}>
+                              Created: {formatDate(campaign.createdAt)}
+                            </Text>
+                          </div>
+                        }
+                        description={
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                            <div>
+                              <Tag color="blue">Applied: {applied}</Tag>
+                            </div>
+                            <div>
+                              <Tag color="green">Shortlisted: {shortlisted}</Tag>
+                            </div>
+                            <div>
+                              <Tag color="purple">Hired: {hired}</Tag>
+                            </div>
+                            <div>
+                              <Tag color="orange">Total: {campaignApplications.length}</Tag>
+                            </div>
+                            
+                            <div style={{ width: '100%', marginTop: '5px' }}>
+                              <Button 
+                                type="link" 
+                                style={{ padding: 0 }}
+                                onClick={() => navigateTo(`/app/brands/campaigns/campaign-detail/${campaign._id}`)}
+                              >
+                                View Applications
+                              </Button>
+                            </div>
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  );
+                }}
+              />
+            ) : (
+              <Empty description="No application statistics available" />
             )}
           </Card>
         </Col>
@@ -531,78 +466,35 @@ const BrandDashboard = () => {
             <div
               style={{ display: "flex", flexDirection: "column", gap: "12px" }}
             >
-              <Link to="/app/brands/campaigns/order-form">
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  block
-                  style={{
-                    background: colors.primary,
-                    borderColor: colors.primary,
-                    height: "40px",
-                  }}
-                >
-                  Create New Campaign
-                </Button>
-              </Link>
-              <Link to="/app/brands/all-contracts">
-                <Button
-                  block
-                  style={{
-                    borderColor: colors.info,
-                    color: colors.info,
-                    height: "40px",
-                  }}
-                >
-                  View Contracts
-                </Button>
-              </Link>
-              <Link to="/app/brands/account-settings">
-                <Button block style={{ height: "40px" }}>
-                  Account Settings
-                </Button>
-              </Link>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => navigateTo('/app/brands/campaigns/order-form')}
+                style={{
+                  background: colors.primary,
+                  borderColor: colors.primary,
+                  height: "40px",
+                }}
+              >
+                Create New Campaign
+              </Button>
+              <Button
+                onClick={() => navigateTo('/app/brands/all-contracts')}
+                style={{
+                  borderColor: colors.info,
+                  color: colors.info,
+                  height: "40px",
+                }}
+              >
+                View Contracts
+              </Button>
+              <Button 
+                onClick={() => navigateTo('/app/brands/account-settings')}
+                style={{ height: "40px" }}
+              >
+                Account Settings
+              </Button>
             </div>
-          </Card>
-
-          <Card
-            title={
-              <Title level={5} style={{ margin: 0 }}>
-                Campaign Spending Breakdown
-              </Title>
-            }
-            style={{
-              borderRadius: "8px",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-            }}
-          >
-            <Chart
-              options={{
-                ...spendingOptions.options,
-                colors: [
-                  // color should be kind of flat colors
-                  "#3498db",
-                  "#e74c3c",
-                  "#2ecc71",
-                  "#f1c40f",
-                ],
-                legend: {
-                  position: "bottom",
-                  fontFamily:
-                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
-                  labels: {
-                    colors: colors.text,
-                  },
-                },
-                chart: {
-                  fontFamily:
-                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
-                },
-              }}
-              series={spendingOptions.series}
-              type="donut"
-              height={300}
-            />
           </Card>
 
           <Card
@@ -612,16 +504,17 @@ const BrandDashboard = () => {
               </Title>
             }
             style={{
-              marginTop: 24,
               borderRadius: "8px",
               boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
             }}
             extra={
-              <Link to="/app/brands/all-contracts">
-                <Button type="link" style={{ color: colors.primary }}>
-                  View All
-                </Button>
-              </Link>
+              <Button 
+                type="link" 
+                style={{ color: colors.primary }}
+                onClick={() => navigateTo('/app/brands/all-contracts')}
+              >
+                View All
+              </Button>
             }
           >
             {contracts.length > 0 ? (
@@ -638,25 +531,21 @@ const BrandDashboard = () => {
                         />
                       }
                       title={
-                        <Link
-                          to={`/app/brands/campaigns/view-project/${contract._id}`}
-                          style={{ color: colors.text }}
-                        >
+                        <Text strong style={{ color: colors.text }}>
                           {contract.user?.name || "Unknown Creator"}
-                        </Link>
+                        </Text>
                       }
                       description={
                         <Space direction="vertical" size={2}>
                           <Text style={{ color: colors.lightText }}>
                             <CalendarOutlined style={{ marginRight: 4 }} />
-                            Campaign: {contract.campaign?.campaign_name}
+                            Campaign: {contract.campaign?.campaign_name || 'Unknown Campaign'}
                           </Text>
                           <Text style={{ color: colors.lightText }}>
                             <DollarOutlined style={{ marginRight: 4 }} />
-                            Amount: ${contract.amount}
+                            Amount: ${contract.amount?.toFixed(2) || '0.00'}
                           </Text>
                           <div>
-                            Status:{" "}
                             <Tag
                               color={
                                 contract.status === "Completed"
@@ -666,8 +555,15 @@ const BrandDashboard = () => {
                                   : colors.warning
                               }
                             >
-                              {contract.status}
+                              {contract.status || 'Unknown'}
                             </Tag>
+                            <Button 
+                              type="link" 
+                              style={{ padding: 0, marginLeft: '10px' }}
+                              onClick={() => navigateTo(`/app/brands/campaigns/view-project/${contract._id}`)}
+                            >
+                              View Details
+                            </Button>
                           </div>
                         </Space>
                       }
