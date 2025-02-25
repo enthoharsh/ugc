@@ -1771,7 +1771,7 @@ ul.ant-menu.ant-menu-light.ant-menu-root.ant-menu-inline{
 }
 
 .ant-timeline-item-content {
-  margin-bottom: 24px !important;
+  padding-bottom: 24px !important;
 }
 
 /* Custom upload button styles */

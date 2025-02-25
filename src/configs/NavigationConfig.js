@@ -2,7 +2,7 @@ import {
   BellOutlined,
   DashboardOutlined, DollarOutlined, IdcardOutlined, MessageOutlined, SafetyOutlined, ShopOutlined, TeamOutlined, UserOutlined
 } from '@ant-design/icons';
-import { UserPortfolio, Campaign, DashboardIcon, ProjectMarketIcon, ContractIcon, SettingIcon } from 'components/icons';
+import { UserPortfolio, Campaign, DashboardIcon, ProjectMarketIcon, ContractIcon, SettingIcon, UsersIcon } from 'components/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
 let dashBoardNavTree = [
@@ -25,7 +25,7 @@ let dashBoardNavTree = [
         key: 'a-users',
         path: `${APP_PREFIX_PATH}/admin/users`,
         title: 'Users Management',
-        icon: TeamOutlined,
+        icon: UsersIcon,
         breadcrumb: false,
         submenu: []
       },
@@ -33,7 +33,7 @@ let dashBoardNavTree = [
         key: 'a-contracts',
         path: `${APP_PREFIX_PATH}/admin/contracts`,
         title: 'Payments Management',
-        icon: DollarOutlined,
+        icon: ProjectMarketIcon,
         breadcrumb: false,
         submenu: []
       }

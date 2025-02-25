@@ -53,7 +53,9 @@ export const Views = (props) => {
 				}
 			} else if (user.role === 'Brand') {
 				redirectPath = `${APP_PREFIX_PATH}/brands/dashboard`;
-			}
+			} else if(user.role === 'Admin') {
+        redirectPath = `${APP_PREFIX_PATH}/admin/dashboard`;
+      }
             
       // if path includes auth then
       if (location.pathname.includes(AUTH_PREFIX_PATH)) {
