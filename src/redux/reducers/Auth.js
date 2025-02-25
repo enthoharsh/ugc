@@ -23,13 +23,12 @@ const auth = (state = initState, action) => {
 	switch (action.type) {
 		case AUTHENTICATED:
 			const userData = action.user || state.userData;
-
 			let redirectPath = '/';
+
 			if (userData) {
 			  if (userData.role === 'Brand') {
 				redirectPath = `${APP_PREFIX_PATH}/brands/dashboard`;
 			  } else if (userData.role === 'Creator') {
-				// Check if the creator is verified
 				if (userData.verified === false) {
 				  redirectPath = `${APP_PREFIX_PATH}/verification-pending`;
 				} else {
