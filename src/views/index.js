@@ -37,6 +37,31 @@ export const Views = (props) => {
   const currentAppLocale = AppLocale[locale];
   useBodyClass(`dir-${direction}`);
 
+
+	useEffect(() => {
+		if (token !== null) {
+			// Get user info from localStorage
+			const user = JSON.parse(localStorage.getItem('main_user') || '{}');
+			let redirectPath = "";
+            
+			// Determine redirect path based on user role
+			if (user.role === 'Creator') {
+				if (user.verified === false) {
+					redirectPath = `${APP_PREFIX_PATH}/creators/verification-pending`;
+				} else {
+					redirectPath = `${APP_PREFIX_PATH}/creators/dashboard`;
+				}
+			} else if (user.role === 'Brand') {
+				redirectPath = `${APP_PREFIX_PATH}/brands/dashboard`;
+			}
+            
+      // if path includes auth then
+      if (location.pathname.includes(AUTH_PREFIX_PATH)) {
+        window.location.href = redirectPath
+      }
+    }
+	}, [token]);
+
   if (!token) {
     // User not authenticated, show auth layout
     return (

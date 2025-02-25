@@ -202,6 +202,7 @@ import {
 } from 'redux/actions/Auth';
 import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion"
+import { APP_PREFIX_PATH } from 'configs/AppConfig';
 
 export const LoginForm = props => {
 	let history = useHistory();
@@ -243,17 +244,6 @@ export const LoginForm = props => {
 		showLoading()
 		signInWithFacebook()
 	}
-
-	useEffect(() => {
-		if (token !== null && allowRedirect) {
-			history.push(redirect)
-		}
-		if(showMessage) {
-			setTimeout(() => {
-				hideAuthMessage();
-			}, 3000);
-		}
-	});
 	
 	const renderOtherSignIn = (
 		<div>

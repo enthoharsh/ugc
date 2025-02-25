@@ -21,7 +21,7 @@ import { motion } from "framer-motion";
 import JwtAuthService from "services/JwtAuthService";
 import { api } from "auth/FetchInterceptor";
 import axios from "axios";
-import { API_BASE_URL } from "configs/AppConfig";
+import { API_BASE_URL, APP_PREFIX_PATH } from "configs/AppConfig";
 import FirebaseService from "services/FirebaseService";
 
 const { Option } = Select;
@@ -30,6 +30,7 @@ const BrandRegisterForm = props => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
+  let history = useHistory();
 
   const { 
 		otherSignIn, 
@@ -199,6 +200,33 @@ const BrandRegisterForm = props => {
     // 	message.error('Registration failed. Please try again.');
     //   }
   };
+
+  useEffect(() => {
+    if (token !== null) {
+      // Get user info from localStorage
+      const user = JSON.parse(localStorage.getItem('main_user') || '{}');
+      let redirectPath = redirect;
+            
+      // Determine redirect path based on user role
+      if (user.role === 'Creator') {
+        if (user.verified === false) {
+          redirectPath = `${APP_PREFIX_PATH}/creators/verification-pending`;
+        } else {
+          redirectPath = `${APP_PREFIX_PATH}/creators/dashboard`;
+        }
+      } else if (user.role === 'Brand') {
+        redirectPath = `${APP_PREFIX_PATH}/brands/dashboard`;
+      }
+            
+      history.push(redirectPath);
+    }
+    
+    if (showMessage) {
+      setTimeout(() => {
+        hideAuthMessage();
+      }, 3000);
+    }
+  }, [token]);
 
   const next = async () => {
     try {
