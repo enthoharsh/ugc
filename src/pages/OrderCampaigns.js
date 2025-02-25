@@ -13,7 +13,7 @@ import {
 } from "antd";
 import { Tag } from "antd";
 import { Upload, Space } from "antd";
-import { UploadOutlined, GlobalOutlined } from "@ant-design/icons";
+import { UploadOutlined, GlobalOutlined, FileOutlined, DeleteOutlined } from "@ant-design/icons";
 import { api } from "auth/FetchInterceptor";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
@@ -157,6 +157,7 @@ const Campaigns = () => {
   const [callToAction, setCallToAction] = useState("");
   const [isGifted, setIsGifted] = useState(false);
   const [needsShipping, setNeedsShipping] = useState(false);
+  const [creatorsNeeded, setCreatorsNeeded] = useState(1);
 
   let history = useHistory();
 
@@ -240,6 +241,7 @@ const Campaigns = () => {
   });
 
   const [campaignBudget, setCampaignBudget] = useState('')
+  const [numberOfCreators, setNumberOfCreators] = useState(1)
 
   const [platforms, setPlatforms] = useState(["Instagram"]);
   const [aspectRatio, setAspectRatio] = useState("9:16");
@@ -278,6 +280,7 @@ const Campaigns = () => {
         product_brand_logo: brandLogo,
         categories: category,
         campaign_budget: campaignBudget,
+        creators_needed: creatorsNeeded,
         target_audience: targetAudience,
         what_do_you_want_to_see_in_the_video: videoDescription,
         what_do_you_want_them_to_say: script,
@@ -285,7 +288,7 @@ const Campaigns = () => {
         will_the_product_be_gifted_to_the_creator: isGifted,
         brand_website_social_platforms: brandWebsiteAndSocialPlatform,
         do_you_need_to_ship_your_product_to_the_creators: needsShipping,
-        upload_script_or_other_assets: ["Script", "Assets"],
+        upload_script_or_other_assets: uploadScriptOrOtherAssets,
       })
       .then((res) => {
         history.push("/app/brands/campaigns/all-campaigns");
@@ -317,11 +320,21 @@ const Campaigns = () => {
         extension: info.file.name.split(".").pop(),
       }).then((res) => {
         if (res.success) {
-          setUploadScriptOrOtherAssets((pre) => [...pre, res.data]);
+          setUploadScriptOrOtherAssets((pre) => [...pre, {
+            url: res.url,
+            name: info.file.name,
+            type: info.file.type
+          }]);
           info.onSuccess();
         }
       });
     };
+  };
+
+  const deleteAsset = (indexToRemove) => {
+    setUploadScriptOrOtherAssets((prevAssets) => 
+      prevAssets.filter((_, index) => index !== indexToRemove)
+    );
   };
 
   return (
@@ -674,6 +687,18 @@ const Campaigns = () => {
               />
             </div>
 
+            <div className="styled-radio-group">
+              <h3>Number of Creators Needed</h3>
+              <Input
+                type="number"
+                min="1"
+                placeholder="How many creators do you need?"
+                value={creatorsNeeded}
+                onChange={(e) => setCreatorsNeeded(parseInt(e.target.value) || 1)}
+                className="styled-input"
+              />
+            </div>
+
             <div className="radio-buttons">
               <h3>Will the product be gifted to the creator?</h3>
               <Radio.Group
@@ -739,6 +764,24 @@ const Campaigns = () => {
               <Upload customRequest={handleScriptOrOtherAssetsChange}>
                 <Button icon={<UploadOutlined />}>Upload files</Button>
               </Upload>
+              
+              {uploadScriptOrOtherAssets.length > 0 && (
+                <div style={{ marginTop: '10px' }}>
+                  <div style={{ fontWeight: 'bold' }}>Uploaded files:</div>
+                  {uploadScriptOrOtherAssets.map((asset, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
+                      <FileOutlined style={{ marginRight: '8px' }} />
+                      <span style={{ flex: 1 }}>{asset.name || `File ${index + 1}`}</span>
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => deleteAsset(index)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           <div className="steps-actions">
         <Button

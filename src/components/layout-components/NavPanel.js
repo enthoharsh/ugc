@@ -61,7 +61,17 @@ export class NavPanel extends Component {
     );
 
     const profileMenu = (
-      <Menu>
+      <Menu onClick={() => {
+        const user = JSON.parse(localStorage.getItem("main_user") || "{}");
+
+        if(user.role == 'Brand') {
+          window.location.href = "/app/brands/account-settings";
+        } else if(user.role == 'Creator') {
+          window.location.href = "/app/creators/account-settings";
+        } else {
+          window.location.href = "/app/admins/account-settings";
+        }
+      }}>
         <Menu.Item key="edit-profile">
           <EditOutlined /> Edit Profile
         </Menu.Item>
@@ -83,13 +93,13 @@ export class NavPanel extends Component {
           </Menu.Item> */}
 
           {/* Notifications */}
-          <Menu.Item key="notifications">
+          {/* <Menu.Item key="notifications">
             <Dropdown overlay={notificationMenu} trigger={["click"]} placement="bottomRight">
               <Badge count={unreadCount} offset={[-10, 0]}>
                 <BellOutlined className="nav-icon" style={{ cursor: "pointer", fontSize: 20 }} />
               </Badge>
             </Dropdown>
-          </Menu.Item>
+          </Menu.Item> */}
 
           {/* Profile Dropdown */}
           <Menu.Item key="profile">
