@@ -647,8 +647,7 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
 
   const user = JSON.parse(localStorage.getItem("main_user"));
   const isBrand = user.role === "Brand";
-  const requiresShipping =
-    contract?.campaign?.do_you_need_to_ship_your_product_to_the_creators;
+  const requiresShipping = contract?.campaign?.do_you_need_to_ship_your_product_to_the_creators;
 
   const handleUpload = async (info) => {
     if (info.file.status === "uploading") {
@@ -668,7 +667,11 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
           if (res.success) {
             setFormData((prev) => ({
               ...prev,
-              uploadedFiles: [...prev.uploadedFiles, res.url],
+              uploadedFiles: [...prev.uploadedFiles, {
+                url: res.url,
+                name: info.file.name,
+                type: info.file.type
+              }],
             }));
             setLoading(false);
             info.onSuccess();
@@ -682,22 +685,41 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
       const latestContract = await api.getSingle("Contracts", {
         _id: contract._id,
       });
-      const updatedTimeline = [
-        ...latestContract.data.timeline,
-        newTimelineItem,
-      ];
+      
+      // Update status if provided in timelineItem data
+      let updateData = {
+        timeline: [...latestContract.data.timeline, newTimelineItem]
+      };
+      
+      if (newTimelineItem.data?.status) {
+        updateData.status = newTimelineItem.data.status;
+      }
+      
+      // Update payment_status if provided in timelineItem data
+      if (newTimelineItem.data?.payment_status) {
+        updateData.payment_status = newTimelineItem.data.payment_status;
+      }
+      
+      // Special case for project completion
+      if (newTimelineItem.type === "project_completed") {
+        updateData.status = "Completed";
+        updateData.payment_status = "Pending Release";
+      }
+      
       await api.update(
         "Contracts",
         {
-          ...latestContract,
-          timeline: updatedTimeline,
+          ...latestContract.data,
+          ...updateData
         },
         latestContract.data._id
       );
+      
       onTimelineUpdate();
       message.success("Timeline updated successfully");
     } catch (error) {
       message.error("Failed to update timeline");
+      console.error("Timeline update error:", error);
     }
   };
 
@@ -740,6 +762,17 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
       },
     };
     await updateTimeline(timelineItem);
+    
+    // Automatically add content creation phase
+    const contentCreationItem = {
+      type: "content_creation_started",
+      data: {
+        brand_text: "Creator is working on content",
+        creator_text: "Content creation in progress",
+        date: new Date()
+      }
+    };
+    await updateTimeline(contentCreationItem);
   };
 
   const handleContentSubmit = async () => {
@@ -778,27 +811,54 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
       icon: <ExclamationCircleOutlined />,
       content: "This action will release the payment and cannot be undone.",
       onOk: async () => {
-        const timelineItem = {
-          type: "project_completed",
-          data: {
-            brand_text: "Project marked as complete",
-            creator_text: `Project completed by ${contract.created_by.name}`,
-            date: new Date(),
-            status: "Completed",
-          },
-        };
-        await updateTimeline(timelineItem);
-        message.success("Project marked as complete");
+        try {
+          // Create timeline item for project completion
+          const timelineItem = {
+            type: "project_completed",
+            data: {
+              brand_text: "Project marked as complete",
+              creator_text: `Project completed by ${contract.created_by.name}`,
+              date: new Date(),
+              status: "Completed",
+              payment_status: "Pending Release"
+            },
+          };
+          
+          // Get latest contract data
+          const latestContract = await api.getSingle("Contracts", {
+            _id: contract._id,
+          });
+          
+          // Update contract with new status and payment status
+          await api.update(
+            "Contracts",
+            {
+              ...latestContract.data,
+              status: "Completed", // Update the contract status
+              payment_status: "Pending Release", // Update payment status
+              timeline: [...latestContract.data.timeline, timelineItem]
+            },
+            latestContract.data._id
+          );
+          
+          message.success("Project marked as complete. Payment is ready for processing.");
+          onTimelineUpdate(); // Refresh the timeline
+        } catch (error) {
+          console.error("Error completing project:", error);
+          message.error("Failed to mark project as complete. Please try again.");
+        }
       },
     });
   };
 
   const getNextAction = () => {
     const timeline = contract.timeline || [];
+    if (timeline.length === 0) return null;
+    
     const lastItem = timeline[timeline.length - 1];
 
     // No timeline items - start of contract
-    if (timeline.length === 1 && isBrand) {
+    if (timeline.length === 1 && lastItem.type === "contract_started" && isBrand) {
       return {
         type: "initial",
         button: (
@@ -830,7 +890,7 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
         }
         break;
 
-      case "product_received":
+      case "content_creation_started":
         if (!isBrand) {
           return {
             type: "content",
@@ -892,15 +952,29 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
           };
         }
         break;
+        
+      case "project_completed":
+        if (!isBrand) {
+          return {
+            type: "payment",
+            button: (
+              <Button
+                type="primary"
+                onClick={() => window.location.href = "mailto:support@socialshake.com?subject=Payment for Contract " + contract._id}
+              >
+                Contact Social Shake Team
+              </Button>
+            ),
+          };
+        }
+        break;
     }
 
     return null;
   };
 
   const renderTimelineItem = (item) => {
-    const text =
-      (isBrand ? item.data.brand_text : item.data.creator_text) ||
-      item.data.text;
+    const text = isBrand ? item.data.brand_text : item.data.creator_text || item.data.text;
     const date = new Date(item.data.date).toLocaleDateString();
 
     return (
@@ -919,6 +993,31 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
             <div className="timeline-tracking">
               <div className="timeline-tracking-label">Tracking ID</div>
               <div className="timeline-tracking-id">{item.data.trackingId}</div>
+            </div>
+          )}
+          
+          {item.data.notes && (
+            <div className="timeline-notes">
+              <strong>Notes</strong>
+              <div>{item.data.notes}</div>
+            </div>
+          )}
+          
+          {item.data.link && (
+            <div className="timeline-link">
+              <strong>Access Link</strong>
+              <div>
+                <a href={item.data.link} target="_blank" rel="noopener noreferrer">
+                  {item.data.link}
+                </a>
+              </div>
+            </div>
+          )}
+
+          {item.data.feedback && (
+            <div className="timeline-feedback">
+              <strong>Feedback</strong>
+              <div>{item.data.feedback}</div>
             </div>
           )}
 
@@ -940,32 +1039,15 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
               ))}
             </div>
           )}
-
-          {item.data.notes && (
-            <div className="timeline-notes">
-              <strong>Notes</strong>
-              <div>{item.data.notes}</div>
-            </div>
-          )}
-
-          {item.type === "product_shipped" && !isBrand && (
+          
+          {/* For physical product shipment */}
+          {(item.type === "product_shipped" || item.type === "digital_access_shared") && !isBrand && 
+           !contract.timeline.some(t => t.type === "product_received") && (
             <button
               className="timeline-action-button"
               onClick={handleProductReceived}
             >
               Mark Received
-            </button>
-          )}
-
-          {item.type === "revision_requested" && !isBrand && (
-            <button
-              className="timeline-action-button"
-              onClick={() => {
-                setModalType("content");
-                setIsModalVisible(true);
-              }}
-            >
-              Deliver
             </button>
           )}
         </div>
@@ -988,7 +1070,7 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
             />
             <TextArea
               rows={4}
-              placeholder="Enter shipping notes..."
+              placeholder="Enter shipping notes, instructions, or other details"
               value={formData.shippingNotes}
               onChange={(e) =>
                 setFormData({ ...formData, shippingNotes: e.target.value })
@@ -1010,7 +1092,7 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
             />
             <TextArea
               rows={4}
-              placeholder="Enter access details and notes..."
+              placeholder="Enter access details, credentials and instructions"
               value={formData.digitalNotes}
               onChange={(e) =>
                 setFormData({ ...formData, digitalNotes: e.target.value })
@@ -1020,20 +1102,17 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
         );
 
       case "content":
-      case "revision":
         return (
           <>
-            {modalType === "revision" && (
-              <TextArea
-                rows={4}
-                placeholder="Enter revision feedback..."
-                value={formData.feedback}
-                onChange={(e) =>
-                  setFormData({ ...formData, feedback: e.target.value })
-                }
-                className="mb-3"
-              />
-            )}
+            <TextArea
+              rows={4}
+              placeholder="Add description for your submission..."
+              value={formData.contentDescription}
+              onChange={(e) =>
+                setFormData({ ...formData, contentDescription: e.target.value })
+              }
+              className="mb-3"
+            />
             <Upload
               customRequest={handleUpload}
               multiple={true}
@@ -1043,6 +1122,43 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
                 Upload Files
               </Button>
             </Upload>
+            {formData.uploadedFiles.length > 0 && (
+              <div className="mt-3">
+                <div className="font-weight-bold mb-2">Uploaded Files:</div>
+                {formData.uploadedFiles.map((file, index) => (
+                  <div key={index} className="mb-1 d-flex align-items-center">
+                    <FileOutlined className="mr-2" />
+                    <span>{file.name}</span>
+                    <Button 
+                      type="text" 
+                      icon={<DeleteOutlined />} 
+                      size="small"
+                      onClick={() => {
+                        const newFiles = [...formData.uploadedFiles];
+                        newFiles.splice(index, 1);
+                        setFormData({...formData, uploadedFiles: newFiles});
+                      }}
+                      className="ml-2"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        );
+
+      case "revision":
+        return (
+          <>
+            <TextArea
+              rows={4}
+              placeholder="Provide revision feedback..."
+              value={formData.feedback}
+              onChange={(e) =>
+                setFormData({ ...formData, feedback: e.target.value })
+              }
+              className="mb-3"
+            />
           </>
         );
 
@@ -1085,12 +1201,10 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
 
   return (
     <div className="timeline-wrapper">
-      {/* <Timeline> */}
       <div className="timeline-content">
         {[...(contract.timeline || [])].reverse().map(renderTimelineItem)}
       </div>
-      {/* </Timeline> */}
-
+      
       {/* Show next action at the top */}
       {nextAction?.button && (
         <div style={{ padding: "16px", borderTop: "1px solid #eee" }}>
@@ -1113,6 +1227,14 @@ const ProjectTimeline = ({ contract, onTimelineUpdate }) => {
           });
         }}
         onOk={handleModalOk}
+        okButtonProps={{
+          disabled: (
+            (modalType === "content" && formData.uploadedFiles.length === 0) ||
+            (modalType === "revision" && !formData.feedback) ||
+            (modalType === "shipping" && !formData.trackingId) ||
+            (modalType === "digital" && !formData.digitalLink && !formData.digitalNotes)
+          )
+        }}
       >
         {renderModalContent()}
       </Modal>
