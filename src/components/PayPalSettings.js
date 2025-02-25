@@ -1,60 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Button, Alert, Typography, Space, notification } from 'antd';
-import { LoadingOutlined, CheckCircleFilled, PayCircleFilled, CloseOutlined } from '@ant-design/icons';
-import { api } from 'auth/FetchInterceptor';
+import React, { useEffect, useState } from "react";
+import { Card, Button, Alert, Typography, Space, notification } from "antd";
+import {
+  LoadingOutlined,
+  CheckCircleFilled,
+  PayCircleFilled,
+  CloseOutlined,
+} from "@ant-design/icons";
+import { api } from "auth/FetchInterceptor";
 
 const { Title, Text } = Typography;
 
 const PayPalSettings = ({ userData, onDisconnect, loading }) => {
   const [disconnecting, setDisconnecting] = useState(false);
-  
-  // Check URL parameters for connection status
 
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://www.paypalobjects.com/js/external/api.js';
-        script.async = true;
-        script.onload = () => {
-            window.paypal.use(['login'], function (login) {
-                login.render({
-                    "appid": "AUyULHYFTpCGBFaTlrlT-JHaPS5WM_7tAA8M3zGPKBUQdnSnsimvAfLJf1BA4bU-lYu8FZScANOC0BWN",
-                    "authend": "sandbox",
-                    "scopes": "openid email",
-                    "containerid": "paypal",
-                    "responseType": "code",
-                    "locale": "en-us",
-                    "buttonType": "CWP",
-                    "buttonShape": "pill",
-                    "buttonSize": "lg",
-                    "fullPage": "false",
-                    "returnurl": "https://ugc-backend.inkapps.io/api/paypal/callback"
-                });
-            });
-        };
-        document.body.appendChild(script);
-    }, []);
+  const user = JSON.parse(localStorage.getItem("main_user") || "{}");
+  const userId = user._id;
+
+  const returnUrl = `https://ugc-backend.inkapps.io/api/paypal/callback`;
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.paypalobjects.com/js/external/api.js";
+    script.async = true;
+    script.onload = () => {
+      window.paypal.use(["login"], function (login) {
+        login.render({
+          appid:
+            "AUyULHYFTpCGBFaTlrlT-JHaPS5WM_7tAA8M3zGPKBUQdnSnsimvAfLJf1BA4bU-lYu8FZScANOC0BWN",
+          authend: "sandbox",
+          scopes: "openid email",
+          containerid: "paypal",
+          responseType: "code",
+          locale: "en-us",
+          buttonType: "CWP",
+          buttonShape: "pill",
+          buttonSize: "lg",
+          fullPage: "false",
+          returnurl: returnUrl,
+          state: userId,
+        });
+      });
+    };
+    document.body.appendChild(script);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const paypalStatus = params.get('paypal');
-    
-    if (paypalStatus === 'success') {
+    const paypalStatus = params.get("paypal");
+
+    if (paypalStatus === "success") {
       notification.success({
-        message: 'PayPal Connected',
-        description: 'Your PayPal account has been successfully connected.',
+        message: "PayPal Connected",
+        description: "Your PayPal account has been successfully connected.",
       });
-      
+
       // Clean up the URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
-    } else if (paypalStatus === 'error') {
-      const reason = params.get('reason') || 'unknown';
-      
+    } else if (paypalStatus === "error") {
+      const reason = params.get("reason") || "unknown";
+
       notification.error({
-        message: 'Connection Failed',
+        message: "Connection Failed",
         description: `Failed to connect your PayPal account. Reason: ${reason}`,
       });
-      
+
       // Clean up the URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
@@ -65,20 +75,22 @@ const PayPalSettings = ({ userData, onDisconnect, loading }) => {
     try {
       setDisconnecting(true);
       const response = await api.customRoute("paypal/disconnect", {});
-      
+
       if (response.success) {
         notification.success({
-          message: 'PayPal Disconnected',
-          description: 'Your PayPal account has been successfully disconnected.',
+          message: "PayPal Disconnected",
+          description:
+            "Your PayPal account has been successfully disconnected.",
         });
-        
+
         if (onDisconnect) onDisconnect();
       }
     } catch (error) {
       console.error("Failed to disconnect PayPal:", error);
       notification.error({
-        message: 'Disconnection Failed',
-        description: 'Failed to disconnect your PayPal account. Please try again.',
+        message: "Disconnection Failed",
+        description:
+          "Failed to disconnect your PayPal account. Please try again.",
       });
     } finally {
       setDisconnecting(false);
@@ -91,10 +103,10 @@ const PayPalSettings = ({ userData, onDisconnect, loading }) => {
   return (
     <Card className="mb-4">
       <Title level={4}>
-        <PayCircleFilled className="mr-2" style={{ color: '#003087' }}/>
+        <PayCircleFilled className="mr-2" style={{ color: "#003087" }} />
         PayPal Account
       </Title>
-      
+
       {loading ? (
         <div className="text-center py-4">
           <LoadingOutlined style={{ fontSize: 24 }} spin />
@@ -107,8 +119,6 @@ const PayPalSettings = ({ userData, onDisconnect, loading }) => {
             description={
               <Space direction="vertical">
                 <Text>Connected Account: {paypalAccount.email}</Text>
-                <Text>Account Name: {paypalAccount.name || 'Not available'}</Text>
-                <Text type="secondary">Last updated: {new Date(paypalAccount.updated_at).toLocaleString()}</Text>
               </Space>
             }
             type="success"
@@ -116,8 +126,8 @@ const PayPalSettings = ({ userData, onDisconnect, loading }) => {
             icon={<CheckCircleFilled />}
             className="mb-4"
           />
-          <Button 
-            danger 
+          <Button
+            danger
             onClick={handleDisconnect}
             loading={disconnecting}
             icon={<CloseOutlined />}
@@ -135,10 +145,10 @@ const PayPalSettings = ({ userData, onDisconnect, loading }) => {
             className="mb-4"
           />
           <div id="paypal-button-container"></div>
-          
+
           {/* PayPal Login Button */}
           <div>
-            <span id='paypal'></span>
+            <span id="paypal"></span>
           </div>
         </div>
       )}

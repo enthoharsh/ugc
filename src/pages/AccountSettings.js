@@ -27,6 +27,7 @@ const AccountSettings = () => {
   const [fileList, setFileList] = useState();
   const [imageUrl, setImageUrl] = useState();
   const [isCreator, setIsCreator] = useState(false);
+  const [userData, setUserData] = useState({});
 
   const handleImageUploadChange = (info) => {
     const reader = new FileReader();
@@ -73,7 +74,7 @@ const AccountSettings = () => {
       });
 
       setIsCreator(res.user.role == "Creator");
-
+      setUserData(res.user);
       setImageUrl(res.user.profile_picture);
     });
   }
@@ -265,7 +266,7 @@ const AccountSettings = () => {
       </Form>
 
       {isCreator && <PayPalSettings 
-        userData={form.getFieldsValue(true)}
+        userData={userData}
         loading={loading}
         onDisconnect={() => {
           // Refresh user data after disconnecting
