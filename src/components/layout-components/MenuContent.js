@@ -33,6 +33,7 @@ const SideNavContent = (props) => {
 	const { sideNavTheme, routeInfo, hideGroupTitle, localization, onMobileNavToggle } = props;
 	const isMobile = !utils.getBreakPoint(useBreakpoint()).includes('lg')
   const [isBrand, setIsBrand] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
 	const closeMobileNav = () => {
 		if (isMobile) {
@@ -46,8 +47,13 @@ const SideNavContent = (props) => {
       main_user = JSON.parse(main_user);
       if (main_user && main_user.role == "Brand") {
         setIsBrand(true);
+        setIsAdmin(false);
+      } else if (main_user && main_user.role == "Admin") {
+        setIsAdmin(true);
+        setIsBrand(false);
       } else {
         setIsBrand(false);
+        setIsAdmin(false);
       }
     } catch (error) {
       console.log(error);
@@ -66,8 +72,10 @@ const SideNavContent = (props) => {
       {(navigationConfig).filter((menu) => {
         if (isBrand) {
           return menu.key == "b-home";
+        } else if (isAdmin) {
+          return menu.key == "a-home";
         } else {
-          return menu.key != "b-home";
+          return menu.key != "b-home" && menu.key != "a-home";
         }
       }).map((menu) =>
         menu.submenu.length > 0 ? (

@@ -1,11 +1,45 @@
 import {
   BellOutlined,
-  DashboardOutlined, IdcardOutlined, MessageOutlined, ShopOutlined, UserOutlined
+  DashboardOutlined, DollarOutlined, IdcardOutlined, MessageOutlined, SafetyOutlined, ShopOutlined, TeamOutlined, UserOutlined
 } from '@ant-design/icons';
 import { UserPortfolio, Campaign, DashboardIcon, ProjectMarketIcon, ContractIcon, SettingIcon } from 'components/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
 let dashBoardNavTree = [
+  {
+    key: 'a-home',
+    path: `${APP_PREFIX_PATH}/admin/dashboard`,
+    title: 'Admin',
+    icon: SafetyOutlined,
+    breadcrumb: false,
+    submenu: [
+      {
+        key: 'a-dashboard',
+        path: `${APP_PREFIX_PATH}/admin/dashboard`,
+        title: 'Dashboard',
+        icon: DashboardIcon,
+        breadcrumb: false,
+        submenu: []
+      },
+      {
+        key: 'a-users',
+        path: `${APP_PREFIX_PATH}/admin/users`,
+        title: 'Users Management',
+        icon: TeamOutlined,
+        breadcrumb: false,
+        submenu: []
+      },
+      {
+        key: 'a-contracts',
+        path: `${APP_PREFIX_PATH}/admin/contracts`,
+        title: 'Payments Management',
+        icon: DollarOutlined,
+        breadcrumb: false,
+        submenu: []
+      }
+    ]
+  },
+
   {
     key: 'b-home',
     path: `${APP_PREFIX_PATH}/brands/dashboard`,

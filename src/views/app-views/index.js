@@ -7,12 +7,22 @@ import { VerifiedRoute } from "../../components/VerificationRoutes";
 export const AppViews = () => {
   const user = JSON.parse(localStorage.getItem('main_user') || '{}');
   const isCreator = user.role === 'Creator';
+  const isAdmin = user.role === 'Admin';
   const isVerified = user.verified !== false;
 
   return (
     <Suspense fallback={<Loading cover="content"/>}>
       <Switch>
         {/* VERIFICATION ROUTE - handled separately in Views.js */}
+
+        {/* ADMIN ROUTES */}
+        {isAdmin && (
+          <>
+            <Route exact path={`${APP_PREFIX_PATH}/admin/dashboard`} component={lazy(() => import(`./admin-dashboard`))} />
+            <Route exact path={`${APP_PREFIX_PATH}/admin/users`} component={lazy(() => import(`./admin-users`))} />
+            <Route exact path={`${APP_PREFIX_PATH}/admin/contracts`} component={lazy(() => import(`./admin-contracts`))} />
+          </>
+        )}
 
         {/* BRANDS ROUTES */}
         <VerifiedRoute path={`${APP_PREFIX_PATH}/brands/dashboard`} component={lazy(() => import(`./brands-dashboard`))} />
@@ -34,6 +44,16 @@ export const AppViews = () => {
         <VerifiedRoute exact path={`${APP_PREFIX_PATH}/creators/marketplace/view-project/:id`} component={lazy(() => import(`../../pages/CampaignInfo`))} />
         <VerifiedRoute path={`${APP_PREFIX_PATH}/creators/portfolio`} component={lazy(() => import(`../../pages/Profile`))} />
 
+        {/* Default redirect based on role */}
+        <Route path={`${APP_PREFIX_PATH}`}>
+          {isAdmin ? (
+            <Redirect to={`${APP_PREFIX_PATH}/admin/dashboard`} />
+          ) : isCreator ? (
+            <Redirect to={`${APP_PREFIX_PATH}/creators/dashboard`} />
+          ) : (
+            <Redirect to={`${APP_PREFIX_PATH}/brands/dashboard`} />
+          )}
+        </Route>
       </Switch>
     </Suspense>
   );
