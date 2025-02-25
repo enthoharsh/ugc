@@ -10,7 +10,7 @@ export const AppViews = () => {
 
         {/* BRANDS ROUTES */}
 
-        <Route path={`${APP_PREFIX_PATH}/brands/dashboard`} component={lazy(() => import(`./home`))} />
+        <Route path={`${APP_PREFIX_PATH}/brands/dashboard`} component={lazy(() => import(`./brands-dashboard`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/all-contracts`} component={lazy(() => import(`../../pages/AllContracts`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/order-form`} component={lazy(() => import(`../../pages/OrderCampaigns`))} />
         <Route exact path={`${APP_PREFIX_PATH}/brands/campaigns/all-campaigns`} component={lazy(() => import(`../../pages/AllCampaigns`))} />
@@ -23,7 +23,9 @@ export const AppViews = () => {
         {/* BRANDS ROUTES */}
         {/* CREATORS ROPUTE */}
 
-        <Route path={`${APP_PREFIX_PATH}/creators/dashboard`} component={lazy(() => import(`./home`))} />
+        <Route path={`${APP_PREFIX_PATH}/creators/verification-pending`} component={lazy(() => import(`./verification-pending`))} />
+
+        <Route path={`${APP_PREFIX_PATH}/creators/dashboard`} component={lazy(() => import(`./creators-dashboard`))} />
         <Route path={`${APP_PREFIX_PATH}/creators/account-settings`} component={lazy(() => import(`../../pages/AccountSettings`))} />
         <Route exact path={`${APP_PREFIX_PATH}/creators/all-contracts`} component={lazy(() => import(`../../pages/AllContracts`))} />
         <Route exact path={`${APP_PREFIX_PATH}/creators/view-contract/:id`} component={lazy(() => import(`../../pages/ViewProject`))} />
