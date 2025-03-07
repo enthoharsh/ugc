@@ -16,6 +16,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { api } from "auth/FetchInterceptor";
 import PayPalSettings from "components/PayPalSettings";
+import StripeBillingPortal from "./StripeBillingPortal";
 const { Title, Text } = Typography;
 
 const { TabPane } = Tabs;
@@ -401,82 +402,11 @@ const AccountSettings = () => {
   );
 
   const PaymentHistory = () => {
-    const dataSource = [
-      {
-        key: "1",
-        campaign: "Demir campaign",
-        transactionId: "12387523",
-        date: "07 Aug 2025",
-        amount: "$87.55",
-      },
-      {
-        key: "2",
-        campaign: "Demir campaign",
-        transactionId: "12387523",
-        date: "07 Aug 2025",
-        amount: "$87.55",
-      },
-      {
-        key: "3",
-        campaign: "Demir campaign",
-        transactionId: "12387523",
-        date: "07 Aug 2025",
-        amount: "$87.55",
-      },
-      {
-        key: "4",
-        campaign: "Demir campaign",
-        transactionId: "12387523",
-        date: "07 Aug 2025",
-        amount: "$87.55",
-      },
-      {
-        key: "5",
-        campaign: "Demir campaign",
-        transactionId: "12387523",
-        date: "07 Aug 2025",
-        amount: "$87.55",
-      },
-    ];
-
-    const columns = [
-      {
-        title: "Campaign",
-        dataIndex: "campaign",
-        key: "campaign",
-      },
-      {
-        title: "Transaction ID",
-        dataIndex: "transactionId",
-        key: "transactionId",
-      },
-      {
-        title: "Date",
-        dataIndex: "date",
-        key: "date",
-      },
-      {
-        title: "Amount",
-        dataIndex: "amount",
-        key: "amount",
-      },
-    ];
-
     return (
       <>
-        <Button
-          type="link"
-          href="https://stripe.com"
-          target="_blank"
-          icon={<ArrowRightOutlined />}
-          className="secondary-color-btn mb-3"
-          style={{
-            color: "#EB2F96",
-          }}
-        >
-          Manage payment details (Stripe)
-        </Button>
-        <div className="account-set" style={{ padding: 20, margin: "0 auto" }}>
+        <StripeBillingPortal userData={userData} />
+        
+        <div className="account-set" style={{ padding: 20, margin: "20px auto 0" }}>
           <div
             style={{
               display: "flex",
@@ -486,19 +416,12 @@ const AccountSettings = () => {
             }}
           >
             <Title level={4} style={{ margin: 0 }}>
-              Payment history
+              Payment History
             </Title>
+            <Text type="secondary">
+              For detailed payment history and invoices, please use the Stripe Billing Portal above.
+            </Text>
           </div>
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            pagination={false}
-            //   bordered
-            //   style={{ borderRadius: "8px", overflow: "hidden" }}
-            rowClassName={(record, index) =>
-              index % 2 === 0 ? "table-row-light" : "table-row-dark"
-            }
-          />
         </div>
       </>
     );

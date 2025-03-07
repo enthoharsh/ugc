@@ -26,6 +26,7 @@ const CampaignDetail = () => {
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [processingApplication, setProcessingApplication] = useState(null);
   const [loading, setLoading] = useState(true);
+  const user = JSON.parse(localStorage.getItem('main_user') || '{}');
 
   // Format date nicely
   const formatDate = (dateString) => {
@@ -52,16 +53,33 @@ const CampaignDetail = () => {
     return result.length > 0 ? result.join(", ") : "None";
   };
 
-  const handlePaymentSuccess = async (paymentIntent) => {
+  const handlePaymentSuccess = async (paymentIntent, customerId) => {
     try {
       if (!processingApplication) return;
       
+      // Save payment record in our system
+      const paymentRecordResponse = await api.customRoute('savePaymentRecord', {
+        paymentIntentId: paymentIntent.id,
+        amount: processingApplication.amount,
+        customerId: customerId,
+        userId: user._id,
+        campaignId: id,
+        applicationId: processingApplication._id
+      });
+  
+      if (!paymentRecordResponse.success) {
+        message.warning('Payment completed but there was an issue saving the payment record.');
+      }
+      
+      // Update application status
       const resp = await api.update("Applications", { 
         status: 'Hired',
-        payment_intent_id: paymentIntent.id 
+        payment_intent_id: paymentIntent.id,
+        customer_id: customerId
       }, processingApplication._id);
   
       if (resp.success) {
+        // Create contract
         await api.save("Contracts", {
           campaign_id: id,
           application_id: processingApplication._id,
@@ -71,6 +89,7 @@ const CampaignDetail = () => {
           amount: processingApplication.amount,
           status: 'In Progress',
           payment_intent_id: paymentIntent.id,
+          stripe_customer_id: customerId,
           timeline: [
             { 
               type: "contract_started", 
@@ -592,6 +611,8 @@ const CampaignDetail = () => {
           setPaymentModalVisible(false);
           setProcessingApplication(null);
         }}
+        campaignId={id}
+        applicationData={processingApplication}
       />
     </>
   );

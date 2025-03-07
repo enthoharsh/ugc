@@ -7,11 +7,12 @@ import { api } from 'auth/FetchInterceptor';
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe('pk_test_51QbWrHFfFMx3GxeO6G8C72ke4dJCj5x80YazKFT2onSW58h1j0MtrlHK0stjeW0ioejX1MRfpprS621z2m7DLMfh009uRSSWCH');
 
-const PaymentForm = ({ amount, onSuccess, onCancel }) => {
+const PaymentForm = ({ amount, onSuccess, onCancel, campaignId, applicationData }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const user = JSON.parse(localStorage.getItem('main_user') || '{}');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -23,9 +24,28 @@ const PaymentForm = ({ amount, onSuccess, onCancel }) => {
     }
 
     try {
-      // Create payment intent using your API interceptor
+      // First create or retrieve a customer
+      const customerResponse = await api.customRoute('createOrRetrieveCustomer', {
+        email: user.email,
+        name: user.name,
+        metadata: {
+          userId: user._id
+        }
+      });
+
+      if (!customerResponse.success) {
+        throw new Error(customerResponse.message || 'Failed to create customer');
+      }
+
+      // Create payment intent using the customer ID
       const response = await api.customRoute('createPaymentIntent', {
-        amount: amount
+        amount: amount,
+        customerId: customerResponse.customerId,
+        metadata: {
+          campaignId: campaignId,
+          applicationId: applicationData._id,
+          description: `Hiring creator for campaign: ${applicationData.campaign?.campaign_name}`
+        }
       });
 
       const { clientSecret } = response;
@@ -34,16 +54,45 @@ const PaymentForm = ({ amount, onSuccess, onCancel }) => {
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
+          billing_details: {
+            name: user.name,
+            email: user.email
+          }
         },
       });
 
       if (result.error) {
         setError(result.error.message);
       } else {
-        onSuccess(result.paymentIntent);
+        onSuccess(result.paymentIntent, customerResponse.customerId);
       }
     } catch (err) {
       setError('Payment failed. Please try again.');
+      console.error('Payment error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const redirectToCustomerPortal = async () => {
+    setLoading(true);
+    try {
+      const user = JSON.parse(localStorage.getItem('main_user') || '{}');
+      
+      const response = await api.customRoute('createPortalSession', {
+        email: user.email,
+        userId: user._id,
+        returnUrl: window.location.href
+      });
+      
+      if (response.success && response.url) {
+        window.location.href = response.url;
+      } else {
+        setError('Failed to redirect to billing portal. Please try again.');
+      }
+    } catch (error) {
+      setError('Failed to access billing portal. Please try again.');
+      console.error('Portal error:', error);
     } finally {
       setLoading(false);
     }
@@ -82,6 +131,16 @@ const PaymentForm = ({ amount, onSuccess, onCancel }) => {
         }} />
       </div>
 
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+        <Button
+          type="link"
+          onClick={redirectToCustomerPortal}
+          style={{ padding: 0, height: 'auto' }}
+        >
+          View billing history and manage payment methods
+        </Button>
+      </div>
+
       <div style={{ 
         display: 'flex', 
         justifyContent: 'flex-end',
@@ -107,7 +166,7 @@ const PaymentForm = ({ amount, onSuccess, onCancel }) => {
   );
 };
 
-const StripePaymentModal = ({ visible, amount, onSuccess, onCancel }) => {
+const StripePaymentModal = ({ visible, amount, onSuccess, onCancel, campaignId, applicationData }) => {
   return (
     <Modal
       title="Complete Payment"
@@ -122,6 +181,8 @@ const StripePaymentModal = ({ visible, amount, onSuccess, onCancel }) => {
           amount={amount}
           onSuccess={onSuccess}
           onCancel={onCancel}
+          campaignId={campaignId}
+          applicationData={applicationData}
         />
       </Elements>
     </Modal>
