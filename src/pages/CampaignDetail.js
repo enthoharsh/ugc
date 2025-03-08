@@ -435,8 +435,44 @@ const CampaignDetail = () => {
                     type="primary"
                     style={{ background: "#f97316", border: "none" }}
                     onClick={() => {
-                      setProcessingApplication(selectedDetails);
-                      setPaymentModalVisible(true);
+                      // setProcessingApplication(selectedDetails);
+                      // setPaymentModalVisible(true);
+
+                      const redirectToCheckout = async (application) => {
+                        try {
+                          setLoading(true);
+                          const response = await api.customRoute('createCheckoutSession', {
+                            amount: application.amount,
+                            userId: user._id,
+                            campaignId: id,
+                            applicationId: application._id,
+                            returnUrl: window.location.href
+                          });
+                          
+                          if (response.success && response.url) {
+                            // Redirect to Stripe Checkout
+                            window.location.href = response.url;
+                          } else {
+                            message.error('Failed to initialize payment. Please try again.');
+                          }
+                        } catch (error) {
+                          console.error('Checkout error:', error);
+                          message.error('Payment initialization failed. Please try again.');
+                        } finally {
+                          setLoading(false);
+                        } 
+                      };
+
+                      confirm({
+                        title: 'Are you sure you want to hire this creator?',
+                        content: 'You will be redirected to the payment page to complete the hiring process.',
+                        onOk() {
+                          redirectToCheckout(selectedDetails);
+                        },
+                        onCancel() {
+                          console.log('Cancel');
+                        },
+                      });
                     }}
                   >
                     Hire
@@ -512,6 +548,20 @@ const CampaignDetail = () => {
 
   useEffect(() => {
     if (id) {
+      // Check URL parameters for successful payment
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get('success');
+      const sessionId = urlParams.get('session_id');
+      
+      if (success === 'true' && sessionId) {
+        message.success('Payment completed and creator hired successfully!');
+        // Clean up URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('success');
+        url.searchParams.delete('session_id');
+        window.history.replaceState({}, '', url);
+      }
+      
       getCampaignDetails();
     } else {
       history.goBack();
